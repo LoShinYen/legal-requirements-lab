@@ -867,6 +867,10 @@
     <a class="nav-item" href="#glossary"><span class="nav-num">00-2</span> 詞彙表 Glossary</a>
     <a class="nav-item" href="#uml-guide"><span class="nav-num">00-3</span> UML 圖表功能說明</a>
     <a class="nav-item" href="#traceability"><span class="nav-num">00-4</span> 需求追蹤矩陣</a>
+    <a class="nav-item" href="#user-scenario"><span class="nav-num">00-5</span> 使用者情境</a>
+    <a class="nav-item" href="#system-boundary"><span class="nav-num">00-6</span> MVP 系統邊界</a>
+    <a class="nav-item" href="#data-credibility"><span class="nav-num">00-7</span> 資料來源可信度分層</a>
+    <a class="nav-item" href="#risk-control"><span class="nav-num">00-8</span> 法遵與名譽風險控制</a>
     <div class="nav-section-label" style="margin-top:8px;">核心 UML</div>
     <a class="nav-item" href="#uc"><span class="nav-num">01</span> Use Case Diagram</a>
     <a class="nav-item" href="#act-search"><span class="nav-num">02</span> 搜尋律師 Activity</a>
@@ -880,6 +884,7 @@
     <a class="nav-item" href="#component"><span class="nav-num">09</span> Component Diagram</a>
     <a class="nav-item" href="#act-ingestion"><span class="nav-num">10</span> 資料匯入 Activity</a>
     <a class="nav-item" href="#access-control"><span class="nav-num">11</span> 權限矩陣</a>
+    <a class="nav-item" href="#future-work"><span class="nav-num">12</span> 後續擴充方向</a>
   </nav>
   <div class="sidebar-footer">
     <div>民事案件 · 近五年資料</div>
@@ -968,7 +973,7 @@
         <div class="roadmap-card">
           <span class="roadmap-step">05</span>
           <div class="roadmap-card-title">系統架構與後續擴充</div>
-          <p class="roadmap-card-desc">包含資料匯入、搜尋索引、管理後台、金流與權限矩陣。</p>
+          <p class="roadmap-card-desc">包含資料匯入、搜尋索引、管理後台、金流、權限矩陣與後續擴充方向章節。</p>
         </div>
       </div>
     </section>
@@ -1043,6 +1048,7 @@
           <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">07</code></td><td>State Machine</td><td>PaymentOrder 8 個狀態，含退款路徑</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">退款補充</span></td></tr>
           <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">08</code></td><td>State Machine</td><td>RiskInfo 8 個狀態，含爭議申訴路徑</td><td><span class="tag tag-derived">需求推導</span></td></tr>
           <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">09</code></td><td>Component Diagram</td><td>14 個系統元件，含搜尋索引與資料匯入</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">架構補充</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">10</code></td><td>Activity Diagram</td><td>資料匯入、解析、去重、可信度標記、搜尋索引更新</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">架構補充</span></td></tr>
         </tbody>
       </table>
     </section>
@@ -1140,6 +1146,150 @@
           <tr><td>推薦可解釋性</td><td>Search Activity、Class Diagram</td><td>CaseProfile、RiskInfo、LawyerSearchModule</td></tr>
         </tbody>
       </table>
+    </section>
+
+    <!-- 00-5 USER SCENARIO -->
+    <section class="diagram-section" id="user-scenario">
+      <div class="section-header">
+        <span class="section-num">00-5</span>
+        <div class="section-title-group">
+          <h2>使用者情境</h2>
+          <span class="section-en">User Scenario</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>本情境用一位一般使用者尋找民事糾紛律師的過程，串接後續 Use Case、Activity、Sequence 與 Class Diagram，讓聽眾先理解系統實際使用方式。</p>
+      </div>
+      <div class="roadmap-grid">
+        <div class="roadmap-card">
+          <span class="roadmap-step">01</span>
+          <div class="roadmap-card-title">輸入查詢條件</div>
+          <p class="roadmap-card-desc">使用者輸入案件類型、地區、律師姓名或關鍵字，例如民事糾紛、台北地區、特定事務所等。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">02</span>
+          <div class="roadmap-card-title">查看候選律師</div>
+          <p class="roadmap-card-desc">系統根據律師基本資料、案件輪廓、事務所資訊與公開風險摘要，回傳候選律師名單。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">03</span>
+          <div class="roadmap-card-title">查看免費資料頁</div>
+          <p class="roadmap-card-desc">使用者進入律師資料頁，查看免費摘要、案件輪廓、事務所資訊與基礎風險提示。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">04</span>
+          <div class="roadmap-card-title">登入並付費解鎖</div>
+          <p class="roadmap-card-desc">若使用者想查看完整公開風險整理與會員心得，需登入並透過綠界完成付費解鎖。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">05</span>
+          <div class="roadmap-card-title">查看完整內容</div>
+          <p class="roadmap-card-desc">付款成功後，系統建立 UnlockRecord，使用者可查看完整案件資訊、公開風險整理與會員心得。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">06</span>
+          <div class="roadmap-card-title">檢舉或申訴</div>
+          <p class="roadmap-card-desc">若會員心得或公開風險資訊有爭議，可透過檢舉或申訴流程進入管理員審核。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 00-6 SYSTEM BOUNDARY -->
+    <section class="diagram-section" id="system-boundary">
+      <div class="section-header">
+        <span class="section-num">00-6</span>
+        <div class="section-title-group">
+          <h2>MVP 系統邊界</h2>
+          <span class="section-en">System Boundary</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>系統邊界用來避免需求失焦，也能降低法律與名譽風險。本 MVP 定位為公開資訊查詢與比較輔助平台，不是法律諮詢平台，也不提供律師能力排名。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>類別</th><th>本 MVP 設計</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>系統定位</td><td>律師公開資訊查詢與比較輔助平台</td></tr>
+          <tr><td>核心範圍</td><td>民事案件、近五年公開資料、搜尋型平台</td></tr>
+          <tr><td>主要功能</td><td>複合條件搜尋、律師資料頁、事務所資訊、公開風險資訊、會員心得、付費解鎖</td></tr>
+          <tr><td>不提供法律諮詢</td><td>系統不回答具體法律問題，也不替使用者判斷訴訟策略</td></tr>
+          <tr><td>不保證律師適合度</td><td>系統只提供資料整理與條件篩選，最終選擇仍由使用者自行判斷</td></tr>
+          <tr><td>不設計勝率榜</td><td>不使用「勝率排行」、「最強律師」、「戰力分數」等過度定性功能</td></tr>
+          <tr><td>不直接撮合委任</td><td>MVP 不處理律師委任契約、收費議價或案件媒合流程</td></tr>
+          <tr><td>不將會員心得作為事實結論</td><td>會員心得屬主觀經驗，需審核與檢舉機制，僅作為參考資訊</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">🧭 邊界說明</div>
+        <p>本 MVP 的核心價值是「整理公開資料並協助比較」，而不是判斷律師優劣。透過明確系統邊界，可避免功能設計過度承諾，也能讓 UML 圖表中的角色、流程與資料模型維持在可落地範圍。</p>
+      </div>
+    </section>
+
+    <!-- 00-7 DATA CREDIBILITY -->
+    <section class="diagram-section" id="data-credibility">
+      <div class="section-header">
+        <span class="section-num">00-7</span>
+        <div class="section-title-group">
+          <h2>資料來源可信度分層</h2>
+          <span class="section-en">Data Credibility Levels</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>本系統資料來源包含法院判決、官方公開資訊、新聞、社群與會員心得。不同來源可信度不同，因此需要透過 CredibilityLevel 標記，避免所有資料被視為同等可信。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>等級</th><th>資料來源</th><th>說明</th><th>系統使用方式</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Level 1</td><td>法院判決、官方律師公開資訊</td><td>可信度最高，作為案件輪廓與基本資料主要依據</td><td>可進入 Lawyer、LawFirm、CaseProfile 基礎資料</td></tr>
+          <tr><td>Level 2</td><td>新聞媒體、公開報導</td><td>需標示來源、發布時間與摘要，不直接作為定性結論</td><td>可進入 RiskInfo，但需人工審核與狀態控管</td></tr>
+          <tr><td>Level 3</td><td>社群討論、會員心得</td><td>主觀性高，容易受個人經驗影響</td><td>僅作為參考，不作為系統評分依據</td></tr>
+          <tr><td>Unknown</td><td>尚未確認來源或格式異常資料</td><td>資料仍需驗證或清洗</td><td>不應直接公開，需進入 PendingVerification 或 Failed 匯入紀錄</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">📊 對應資料模型</div>
+        <p>此分層對應 Class Diagram 中的 DataSource.credibilityLevel 與 RiskInfo.credibilityLevel。資料匯入流程會在建立或更新 CaseProfile / RiskInfo 時，同步標記資料來源與可信度等級。</p>
+      </div>
+    </section>
+
+    <!-- 00-8 RISK CONTROL -->
+    <section class="diagram-section" id="risk-control">
+      <div class="section-header">
+        <span class="section-num">00-8</span>
+        <div class="section-title-group">
+          <h2>法遵與名譽風險控制</h2>
+          <span class="section-en">Compliance &amp; Reputation Risk Control</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>此題目涉及律師、公開爭議資訊與會員心得，因此系統不能只設計搜尋與付款，還必須設計審核、申訴、更正、隱藏、下架與資料可信度標示。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>風險</th><th>對應設計</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>不實評論</td><td>Review 審核流程</td><td>會員心得需經系統規則檢查與管理員審核才可上架</td></tr>
+          <tr><td>誹謗或過度定性</td><td>中性命名與 RiskInfo 狀態機</td><td>使用「公開風險資訊」、「誠信風險觀測」等中性名稱，避免使用「案底」等字眼</td></tr>
+          <tr><td>資料來源不可信</td><td>DataSource / CredibilityLevel</td><td>法院判決、新聞、社群與會員心得需區分可信度</td></tr>
+          <tr><td>當事人異議</td><td>Complaint / Dispute 流程</td><td>律師或事務所可提出更正、隱藏或下架請求</td></tr>
+          <tr><td>內容爭議處理</td><td>Hidden / Corrected / Removed</td><td>Hidden 為暫時隱藏，Corrected 為更正，Removed 為終局下架</td></tr>
+          <tr><td>付款爭議</td><td>PaymentOrder 狀態機</td><td>記錄付款、解鎖、失敗、逾時與退款等狀態</td></tr>
+          <tr><td>黑盒推薦風險</td><td>可解釋的搜尋與排序依據</td><td>系統以案件類型、地區、資料來源與風險摘要作為輔助依據，不產生不可解釋的律師能力分數</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">⚖️ 報告說明</div>
+        <p>本系統的風險控制不是單一功能，而是分散在 Review 狀態機、RiskInfo 狀態機、Complaint 類別、DataSource 可信度分層與 Admin Module 中。這些設計共同形成平台的內容治理機制。</p>
+      </div>
     </section>
 
     <!-- 01 USE CASE -->
@@ -2342,6 +2492,43 @@ endif
       <div class="design-note">
         <div class="design-note-header">🔐 補充說明</div>
         <p>此矩陣為 MVP 權限基準，實際實作時可對應 RBAC 或 Policy-based Authorization。UnlockedMember 不代表全站付費會員，而是已解鎖特定內容的會員狀態。</p>
+      </div>
+    </section>
+
+    <!-- 12 FUTURE WORK -->
+    <section class="diagram-section" id="future-work">
+      <div class="section-header">
+        <span class="section-num">12</span>
+        <div class="section-title-group">
+          <h2>後續擴充方向</h2>
+          <span class="section-en">Future Work</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>本期中報告聚焦 MVP 系統分析與 UML 建模。後續若進入期末或實作階段，可依資料、功能、治理與架構四個方向逐步擴充。</p>
+      </div>
+      <div class="roadmap-grid">
+        <div class="roadmap-card">
+          <span class="roadmap-step">01</span>
+          <div class="roadmap-card-title">資料擴充</div>
+          <p class="roadmap-card-desc">後續可擴充完成民事案件資料匯入、擴充更多官方與公開資料來源，並建立資料匯入批次與錯誤追蹤。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">02</span>
+          <div class="roadmap-card-title">功能擴充</div>
+          <p class="roadmap-card-desc">後續可擴充加入律師收藏與比較功能、補強搜尋篩選條件，並建立更完整的律師資料頁。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">03</span>
+          <div class="roadmap-card-title">治理擴充</div>
+          <p class="roadmap-card-desc">後續可擴充建立完整申訴與審計紀錄、補強會員心得審核規則，並強化資料來源與可信度標示。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">04</span>
+          <div class="roadmap-card-title">架構擴充</div>
+          <p class="roadmap-card-desc">後續可擴充搜尋索引最佳化、管理後台權限細分，並於未來評估可解釋推薦，但避免黑盒評分與能力排名。</p>
+        </div>
       </div>
     </section>
 
