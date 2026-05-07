@@ -16,9 +16,9 @@
     --surface2: #1f2740;
     --border: #2a3350;
     --border2: #344060;
-    --fg: #e8edf8;
-    --fg2: #a8b4cc;
-    --fg3: #6b7a99;
+    --fg: #eef2fb;
+    --fg2: #c0cbe1;
+    --fg3: #7a89aa;
     --accent: oklch(65% 0.15 205);
     --accent2: oklch(72% 0.14 158);
     --accent3: oklch(68% 0.13 260);
@@ -59,6 +59,7 @@
   .sidebar-header {
     padding: 28px 24px 20px;
     border-bottom: 1px solid var(--border);
+    position: relative;
   }
   .sidebar-logo {
     font-family: 'Noto Serif TC', serif;
@@ -114,6 +115,65 @@
     font-size: 11px;
     color: var(--fg3);
     font-family: 'JetBrains Mono', monospace;
+  }
+  .sidebar-toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--fg2);
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sidebar-toggle-btn:hover {
+    color: var(--fg);
+    border-color: var(--fg3);
+    transform: translateY(-1px);
+  }
+
+  body.sidebar-collapsed { --sidebar-w: 72px; }
+  body.sidebar-collapsed .sidebar-header {
+    padding: 14px 10px 10px;
+    border-bottom: none;
+  }
+  body.sidebar-collapsed .sidebar-logo,
+  body.sidebar-collapsed .sidebar-title,
+  body.sidebar-collapsed .sidebar-meta,
+  body.sidebar-collapsed .nav-section-label,
+  body.sidebar-collapsed .sidebar-footer {
+    display: none;
+  }
+  body.sidebar-collapsed .sidebar-nav {
+    padding-top: 8px;
+    overflow-x: hidden;
+  }
+  body.sidebar-collapsed .nav-item {
+    justify-content: center;
+    padding: 10px 0;
+    font-size: 0; /* hide text nodes in <a> safely */
+    border-left-width: 3px;
+  }
+  body.sidebar-collapsed .nav-num {
+    min-width: 0;
+    font-size: 12px;
+  }
+  body.sidebar-collapsed .sidebar-toggle-btn {
+    position: relative;
+    right: auto;
+    top: auto;
+    margin: 0 auto;
+    display: flex;
   }
 
   /* MAIN */
@@ -359,6 +419,363 @@
   }
   #scrolltop.visible { opacity: 1; pointer-events: all; }
   #scrolltop:hover { color: var(--fg); border-color: var(--fg3); }
+
+  /* PRESENTATION-ORIENTED ENHANCEMENTS */
+  .report-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 18px;
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: rgba(20, 25, 41, 0.6);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    max-width: 760px;
+  }
+  .report-meta-item {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .report-meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg3);
+  }
+  .report-meta-value {
+    font-size: 13.5px;
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+  .hero-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    color: var(--fg);
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-decoration: none;
+  }
+  .hero-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .hero-btn.is-active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .hero-btn-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--fg3);
+    transition: background 0.2s;
+  }
+  .hero-btn.is-active .hero-btn-dot { background: var(--accent); }
+
+  /* roadmap & summary cards */
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin: 18px 0 8px;
+  }
+  .roadmap-card {
+    background: linear-gradient(160deg, var(--surface) 0%, var(--bg2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: border-color 0.18s, transform 0.18s;
+  }
+  .roadmap-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+  }
+  .roadmap-step {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .roadmap-card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .roadmap-card-desc {
+    font-size: 13px;
+    color: var(--fg2);
+    line-height: 1.65;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 18px 0 8px;
+  }
+  .summary-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent2);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+  }
+  .summary-card:nth-child(2) { border-top-color: var(--accent); }
+  .summary-card:nth-child(3) { border-top-color: oklch(68% 0.13 260); }
+  .summary-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .summary-card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 10px;
+  }
+  .summary-card-body {
+    font-size: 13.5px;
+    color: var(--fg2);
+    line-height: 1.7;
+  }
+
+  /* presentation-note: 給報告者的「本頁重點」標示 */
+  .presentation-note {
+    background: linear-gradient(135deg, rgba(56, 130, 184, 0.08), rgba(20, 25, 41, 0.55));
+    border: 1px solid var(--border2);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    margin: 8px 0 20px;
+  }
+  .presentation-note-title {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .presentation-note-title::before {
+    content: '◆';
+    font-size: 10px;
+  }
+  .presentation-note p {
+    font-size: 14px;
+    color: var(--fg);
+    line-height: 1.75;
+  }
+
+  /* answers-list 用於 Design Overview 的「本文件回答的問題」 */
+  .answers-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 8px 18px;
+  }
+  .answers-list li {
+    position: relative;
+    padding: 6px 0 6px 28px;
+    font-size: 13.5px;
+    color: var(--fg2);
+    line-height: 1.6;
+  }
+  .answers-list li::before {
+    content: counter(answers-counter, decimal-leading-zero);
+    counter-increment: answers-counter;
+    position: absolute;
+    left: 0; top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .answers-list { counter-reset: answers-counter; }
+
+  /* 加強 section header 階層感（保留既有外觀） */
+  .section-header { padding-bottom: 4px; border-bottom: 1px dashed var(--border); }
+
+  /* 加強 mermaid header 醒目度 */
+  .mermaid-wrap-header { padding: 12px 18px; }
+  .mermaid-wrap-label { font-size: 11.5px; }
+
+  /* 表格 th 對比微調 */
+  .overview-table th {
+    background: var(--surface2);
+    color: var(--fg2);
+  }
+  .overview-table td { color: var(--fg); }
+
+  /* 弱化 PlantUML code-toggle 視覺權重 */
+  .code-toggle {
+    opacity: 0.72;
+    font-size: 11.5px;
+    background: transparent;
+    border-style: dashed;
+  }
+  .code-toggle:hover { opacity: 1; }
+
+  /* PRESENTATION MODE */
+  body.presentation-mode { font-size: 16px; }
+  body.presentation-mode .content { max-width: 1280px; margin: 0 auto; }
+  body.presentation-mode .code-toggle,
+  body.presentation-mode .code-wrap { display: none !important; }
+  body.presentation-mode .design-note p,
+  body.presentation-mode .presentation-note p { font-size: 15.5px; }
+  body.presentation-mode .mermaid-body { min-height: 360px; }
+  body.presentation-mode .overview-table { font-size: 14.5px; }
+  body.presentation-mode .section-title-group h2 { font-size: 28px; }
+  body.presentation-mode .roadmap-card-desc,
+  body.presentation-mode .summary-card-body { font-size: 14.5px; }
+
+  /* RWD */
+  @media (max-width: 1200px) {
+    :root { --sidebar-w: 240px; }
+    .hero { padding: 52px 40px 44px; }
+    .content { padding: 0 40px 64px; }
+  }
+
+  @media (max-width: 900px) {
+    body { display: block; }
+    #sidebar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      min-width: 0;
+      max-height: 42vh;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header { padding: 18px 16px 14px; }
+    .sidebar-nav {
+      padding: 8px 0 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .nav-section-label { grid-column: 1 / -1; padding: 10px 16px 6px; }
+    .nav-item { padding: 8px 16px; }
+    .sidebar-footer { padding: 10px 16px; }
+    .sidebar-toggle-btn { display: none; }
+
+    #main { margin-left: 0; }
+    .hero { padding: 34px 20px 28px; }
+    .hero h1 { font-size: 30px; }
+    .hero-sub { font-size: 15px; margin-bottom: 22px; }
+    .hero-stats { gap: 16px; }
+    .content { padding: 0 20px 48px; }
+
+    .diagram-section { padding: 40px 0; }
+    .section-header { gap: 12px; margin-bottom: 20px; }
+    .section-title-group h2 { font-size: 22px; }
+    .design-note { padding: 16px; }
+
+    .overview-table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .card-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .mermaid-body { padding: 18px 14px; }
+  }
+
+  @media (max-width: 560px) {
+    .sidebar-nav { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .section-header { flex-direction: column; gap: 8px; }
+    .section-num { margin-top: 0; }
+    .legend { flex-direction: column; gap: 8px; }
+    #scrolltop { right: 14px; bottom: 14px; }
+  }
+
+  /* PRINT / PDF FRIENDLY */
+  @media print {
+    body {
+      background: #fff;
+      color: #111;
+      display: block;
+      font-size: 12pt;
+    }
+    #sidebar,
+    #scrolltop,
+    .sidebar-toggle-btn,
+    .mermaid-fullscreen-btn,
+    .mermaid-zoom-tools,
+    .code-toggle,
+    .code-wrap,
+    .hero-actions {
+      display: none !important;
+    }
+    #main { margin-left: 0; }
+    .hero {
+      background: #fff;
+      border-bottom: 1px solid #aaa;
+      padding: 24px 24px 18px;
+    }
+    .hero h1, .hero-sub, .stat-val, .stat-label,
+    .section-title-group h2, .section-title-group .section-en {
+      color: #111;
+    }
+    .hero-badge { background: #eef; border-color: #99c; color: #224; }
+    .content { padding: 0 24px 24px; }
+    .hero,
+    .diagram-section,
+    .roadmap-card,
+    .summary-card,
+    .mermaid-wrap {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .design-note,
+    .presentation-note,
+    .mermaid-wrap,
+    .overview-table,
+    .roadmap-card,
+    .summary-card,
+    .report-meta {
+      border-color: #aaa;
+      background: #fff;
+      color: #111;
+    }
+    .design-note p,
+    .presentation-note p,
+    .roadmap-card-desc,
+    .summary-card-body,
+    .overview-table td,
+    .answers-list li {
+      color: #222;
+    }
+    .overview-table th { background: #eee; color: #222; }
+    .mermaid-body svg { max-width: 100% !important; }
+  }
 </style>
 </head>
 <body>
@@ -369,19 +786,23 @@
     <div class="sidebar-logo">UML 設計規格</div>
     <div class="sidebar-title">律師案件圖譜</div>
     <div class="sidebar-meta">MVP v1.0 · 2026-05-07</div>
+    <button id="sidebarToggle" class="sidebar-toggle-btn" type="button" aria-expanded="true" aria-label="收合側邊欄" title="收合側邊欄">◀</button>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">概覽</div>
-    <a class="nav-item active" href="#overview"><span class="nav-num">00</span> 設計概覽</a>
-    <a class="nav-item" href="#glossary"><span class="nav-num">00-1</span> 詞彙表 Glossary</a>
-    <a class="nav-item" href="#uml-guide"><span class="nav-num">00-2</span> UML 圖表功能說明</a>
-    <a class="nav-item" href="#traceability"><span class="nav-num">00-3</span> 需求追蹤矩陣</a>
-    <div class="nav-section-label" style="margin-top:8px;">UML 圖表</div>
+    <a class="nav-item active" href="#presentation-roadmap"><span class="nav-num">00</span> 報告導覽</a>
+    <a class="nav-item" href="#executive-summary"><span class="nav-num">00-0</span> 專案摘要</a>
+    <a class="nav-item" href="#overview"><span class="nav-num">00-1</span> 設計概覽</a>
+    <a class="nav-item" href="#glossary"><span class="nav-num">00-2</span> 詞彙表 Glossary</a>
+    <a class="nav-item" href="#uml-guide"><span class="nav-num">00-3</span> UML 圖表功能說明</a>
+    <a class="nav-item" href="#traceability"><span class="nav-num">00-4</span> 需求追蹤矩陣</a>
+    <div class="nav-section-label" style="margin-top:8px;">核心 UML</div>
     <a class="nav-item" href="#uc"><span class="nav-num">01</span> Use Case Diagram</a>
     <a class="nav-item" href="#act-search"><span class="nav-num">02</span> 搜尋律師 Activity</a>
     <a class="nav-item" href="#seq-pay"><span class="nav-num">03</span> 付費解鎖 Sequence</a>
     <a class="nav-item" href="#act-review"><span class="nav-num">04</span> 心得審核 Activity</a>
     <a class="nav-item" href="#class"><span class="nav-num">05</span> Class Diagram</a>
+    <div class="nav-section-label" style="margin-top:8px;">狀態與架構</div>
     <a class="nav-item" href="#sm-review"><span class="nav-num">06</span> Review 狀態機</a>
     <a class="nav-item" href="#sm-payment"><span class="nav-num">07</span> PaymentOrder 狀態機</a>
     <a class="nav-item" href="#sm-risk"><span class="nav-num">08</span> RiskInfo 狀態機</a>
@@ -399,18 +820,115 @@
 <main id="main">
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-badge">MVP · 民事案件 · 搜尋型平台</div>
-    <h1>律師案件圖譜<br><span>UML 系統設計規格</span></h1>
-    <p class="hero-sub">適合工程設計階段使用的系統分析文件。涵蓋 Use Case、Activity、Sequence、Class、State Machine 與 Component 圖表。</p>
+    <div class="hero-badge">期中報告 · UML 系統分析 · MVP 設計</div>
+    <h1>律師案件圖譜<br><span>UML 系統分析與設計期中報告</span></h1>
+    <p class="hero-sub">以公開判決、律師公開資訊、新聞聲量與會員心得為基礎，設計一個協助使用者查詢與比較律師的法律科技平台，並透過 UML 圖表呈現 MVP 階段的系統需求、流程、資料模型與權限設計。</p>
     <div class="hero-stats">
-      <div class="stat"><span class="stat-val">10</span><span class="stat-label">UML 圖表</span></div>
-      <div class="stat"><span class="stat-val">7</span><span class="stat-label">核心 Actors</span></div>
-      <div class="stat"><span class="stat-val">10</span><span class="stat-label">Domain Classes</span></div>
-      <div class="stat"><span class="stat-val">14</span><span class="stat-label">系統模組</span></div>
+      <div class="stat"><span class="stat-val">10</span><span class="stat-label">張 UML 圖表 · 需求 / 流程 / 資料 / 狀態 / 架構</span></div>
+      <div class="stat"><span class="stat-val">7</span><span class="stat-label">類系統角色 · 訪客 / 會員 / 管理員 / 金流 / 資料來源</span></div>
+      <div class="stat"><span class="stat-val">10</span><span class="stat-label">核心資料模型 · Lawyer / CaseProfile / RiskInfo / Review …</span></div>
+      <div class="stat"><span class="stat-val">4</span><span class="stat-label">設計重點 · 搜尋 / 付費 / 審核 / 法遵</span></div>
+    </div>
+    <!-- TODO: 可填入姓名、班級、學號、指導老師 -->
+    <div class="report-meta" aria-label="報告資訊">
+      <div class="report-meta-item">
+        <span class="report-meta-label">課程</span>
+        <span class="report-meta-value">系統分析與設計</span>
+      </div>
+      <div class="report-meta-item">
+        <span class="report-meta-label">主題</span>
+        <span class="report-meta-value">法律科技平台 UML 建模</span>
+      </div>
+      <div class="report-meta-item">
+        <span class="report-meta-label">範圍</span>
+        <span class="report-meta-value">民事案件・近五年資料・搜尋型平台</span>
+      </div>
+      <div class="report-meta-item">
+        <span class="report-meta-label">版本</span>
+        <span class="report-meta-value">MVP v1.0</span>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button id="presentationToggle" class="hero-btn" type="button" aria-pressed="false" title="切換展示模式">
+        <span class="hero-btn-dot"></span><span class="hero-btn-label">展示模式</span>
+      </button>
+      <a class="hero-btn" href="#presentation-roadmap">
+        <span class="hero-btn-dot" style="background: var(--accent2)"></span>報告導覽
+      </a>
     </div>
   </div>
 
   <div class="content">
+
+    <!-- 00 PRESENTATION ROADMAP -->
+    <section class="diagram-section" id="presentation-roadmap">
+      <div class="section-header">
+        <span class="section-num">00</span>
+        <div class="section-title-group">
+          <h2>報告導覽</h2>
+          <span class="section-en">Presentation Roadmap</span>
+        </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本頁重點</div>
+        <p>本期中報告依以下五個段落順序進行：先說明專案動機與問題，再帶到 MVP 範圍與 UML 系統建模，接著聚焦法遵與名譽風險的設計處理，最後呈現整體系統架構與後續擴充方向。</p>
+      </div>
+      <div class="roadmap-grid">
+        <div class="roadmap-card">
+          <span class="roadmap-step">01</span>
+          <div class="roadmap-card-title">專案背景與問題</div>
+          <p class="roadmap-card-desc">說明一般使用者找律師時，公開資訊分散、案件經驗難比較、風險資訊難查核。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">02</span>
+          <div class="roadmap-card-title">MVP 功能範圍</div>
+          <p class="roadmap-card-desc">聚焦民事案件、近五年資料、律師搜尋、資料頁、會員心得與付費解鎖。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">03</span>
+          <div class="roadmap-card-title">UML 系統建模</div>
+          <p class="roadmap-card-desc">使用 Use Case、Activity、Sequence、Class、State Machine、Component 圖表描述系統。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">04</span>
+          <div class="roadmap-card-title">風險與法遵設計</div>
+          <p class="roadmap-card-desc">加入公開風險資訊分級、會員心得審核、申訴、更正、隱藏、下架流程。</p>
+        </div>
+        <div class="roadmap-card">
+          <span class="roadmap-step">05</span>
+          <div class="roadmap-card-title">系統架構與後續擴充</div>
+          <p class="roadmap-card-desc">包含資料匯入、搜尋索引、管理後台、金流與權限矩陣。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 00-0 EXECUTIVE SUMMARY -->
+    <section class="diagram-section" id="executive-summary">
+      <div class="section-header">
+        <span class="section-num">00-0</span>
+        <div class="section-title-group">
+          <h2>專案摘要</h2>
+          <span class="section-en">Executive Summary</span>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-card-label">01 · Problem</div>
+          <div class="summary-card-title">問題定義</div>
+          <p class="summary-card-body">一般民眾在尋找律師時，常面臨資訊分散、案件經驗難以判斷、公開風險資訊難比對等問題。</p>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-label">02 · Solution</div>
+          <div class="summary-card-title">解決方案</div>
+          <p class="summary-card-body">本系統整合法院判決、律師公開資訊、事務所資訊、新聞聲量與會員心得，提供複合條件搜尋、律師資料頁、風險資訊觀測與付費解鎖功能。</p>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-label">03 · Scope</div>
+          <div class="summary-card-title">MVP 範圍</div>
+          <p class="summary-card-body">第一階段聚焦民事案件與近五年公開資料，不設計勝率榜、戰力分數或主觀能力排名，避免過度定性與法遵風險。</p>
+        </div>
+      </div>
+    </section>
 
     <!-- 00 OVERVIEW -->
     <section class="diagram-section" id="overview">
@@ -423,11 +941,22 @@
       </div>
       <div class="design-note">
         <div class="design-note-header">📋 文件說明</div>
-        <p>本文件依據「律師案件圖譜需求訪談正式版 v1.0」產出。每張 UML 圖均標示「需求推導」與「合理補充」兩類來源，確保工程團隊能清楚辨識哪些設計決策有需求依據、哪些是 UML 完整性的合理假設。所有圖表使用 Mermaid.js 在瀏覽器端即時渲染，無需安裝任何工具。</p>
+        <p>本文件依據「律師案件圖譜需求訪談正式版 v1.0」產出。每張 UML 圖均標示「需求推導」與「為完整建模所補充」兩類來源，確保後續開發與系統設計能清楚辨識哪些設計決策有需求依據、哪些是 UML 完整性的合理假設。所有圖表使用 Mermaid.js 在瀏覽器端即時渲染，無需安裝任何工具。</p>
         <div class="legend">
           <div class="legend-item"><span class="legend-dot" style="background:var(--accent2)"></span>需求文件明確推導</div>
           <div class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span>為 UML 完整性補充的合理假設</div>
         </div>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本文件回答的問題</div>
+        <ol class="answers-list">
+          <li>這個系統有哪些使用者角色？</li>
+          <li>使用者如何搜尋、查看與解鎖律師資訊？</li>
+          <li>會員心得如何投稿、審核與下架？</li>
+          <li>公開風險資訊如何被收集、驗證、申訴與更正？</li>
+          <li>系統需要哪些核心資料模型與模組？</li>
+          <li>MVP 階段的權限邊界如何設計？</li>
+        </ol>
       </div>
       <table class="overview-table">
         <thead>
@@ -556,6 +1085,10 @@
         <p><span class="note-derived">【需求推導】</span> 7 個 Actor 均直接來自需求文件。Use Cases 依需求 §7 功能需求章節逐項對應。</p>
         <p><span class="note-assumed">【合理補充】</span> 「查看搜尋結果」與「查看公開風險摘要」拆開為獨立 Use Case 以利後續權限控制設計。外部資料來源 Actor 的匯入 Use Cases 對應 MVP 資料匯入架構。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖用來確認系統邊界與角色權限，展示訪客、會員、已解鎖會員、管理員、律師/事務所、金流與外部資料來源之間的互動。</p>
+      </div>
       <div class="card-grid">
         <div class="actor-card"><div class="actor-card-name">訪客</div><div class="actor-card-en">Guest</div><div class="actor-card-desc">未登入，可搜尋與查看免費資訊</div></div>
         <div class="actor-card"><div class="actor-card-name">會員</div><div class="actor-card-en">Member</div><div class="actor-card-desc">已登入，可投稿心得、檢舉、發起付費</div></div>
@@ -650,7 +1183,7 @@ flowchart LR
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -743,6 +1276,10 @@ ExtData --> UC16
         <p><span class="note-derived">【需求推導】</span> 搜尋條件包含姓名、案件類型、地區、事務所、爭議資訊、新聞聲量、案件經驗豐富度（需求 §7.1）。</p>
         <p><span class="note-assumed">【合理補充】</span> 「系統驗證條件」（至少填入一項）為前端 UX 合理預設。「計算案件適配」對應需求 §九 推薦邏輯，具體演算法留待後續設計。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示使用者從輸入查詢條件，到取得候選律師名單，再進入律師資料頁與付費解鎖入口的完整流程。</p>
+      </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
           <span class="mermaid-wrap-label">Mermaid · Activity</span>
@@ -774,7 +1311,7 @@ flowchart TD
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -837,6 +1374,10 @@ stop
         <div class="design-note-header">📐 設計說明</div>
         <p><span class="note-derived">【需求推導】</span> 付費解鎖使用綠界（ECPay）金流（需求 §7.5）。解鎖後建立 UnlockRecord，供後續查詢是否已解鎖。</p>
         <p><span class="note-assumed">【合理補充】</span> Backend 檢查「已解鎖」邏輯（避免重複付款）為標準金流實作慣例。ECPay webhook 驗簽步驟為綠界標準串接規格。</p>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示前端、後端、Payment Service、ECPay 與資料庫之間的呼叫順序，並特別處理未登入、已解鎖與付款驗證失敗情境。</p>
       </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
@@ -908,7 +1449,7 @@ sequenceDiagram
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -985,8 +1526,12 @@ end
       </div>
       <div class="design-note">
         <div class="design-note-header">📐 設計說明</div>
-        <p><span class="note-derived">【需求推導】</span> 審核流程包含「通過、拒絕、要求修改」三種結果（需求 §7.6、§十一）。「檢舉機制」與「下架機制」亦明確列於需求法遵重點。</p>
+        <p><span class="note-derived">【需求推導】</span> 審核流程包含「通過、拒絕、要求修改」三種結果（需求 §7.6、§十一）。「檢舉機制」與「下架機制」亦明確列於需求法遵與名譽風險重點。</p>
         <p><span class="note-assumed">【合理補充】</span> 「系統自動規則檢查」（字數、禁用詞）為 UGC 平台慣例，為必要防護機制。「要求修改」後的再提交循環對應 Review 狀態機。</p>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示會員心得不是直接上架，而是經過規則檢查與管理員審核，以降低不實評論與名譽風險。</p>
       </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
@@ -1020,7 +1565,7 @@ flowchart TD
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1086,6 +1631,10 @@ stop
         <p><span class="note-assumed">【合理補充】</span> 各類別的 createdAt / updatedAt 為 ORM 慣例。UnlockRecord.expiredAt 預設空值（無限期），未來訂閱制可填充。CaseProfile.civilCaseOnly = true 為 MVP 範圍標記。</p>
         <p><span class="note-assumed">【合理補充】</span> Complaint 採多型 target 設計：Complaint.targetType 可為 Review、RiskInfo、LawyerProfile、LawFirmProfile；targetId 為目標物件主鍵。此設計在 MVP 階段較彈性，但資料一致性與授權需由應用層規則補強。</p>
         <p><span class="note-assumed">【合理補充】</span> RiskInfo 採多型目標設計（targetType/targetId），可掛載於 Lawyer 或 LawFirm。資料庫外鍵約束需由應用層或資料一致性規則補強。</p>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖定義 MVP 階段的核心資料模型，包含律師、事務所、案件輪廓、公開風險資訊、會員心得、付款訂單與解鎖紀錄。</p>
       </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
@@ -1199,7 +1748,7 @@ classDiagram
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1252,6 +1801,10 @@ DataSource "1" o-- "0..*" RiskInfo
         <p><span class="note-derived">【需求推導】</span> 狀態反映需求審核流程（§十一）：通過→Published、拒絕→Rejected、要求修改→NeedRevision。Reported 與 Hidden 對應需求「檢舉機制」與「下架機制」。</p>
         <p><span class="note-assumed">【合理補充】</span> Draft 狀態為方便存草稿的常見 UGC 設計。Removed 為最終不可逆狀態，與可恢復的 Hidden 區分。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示會員心得從草稿、審核、上架，到檢舉、隱藏與移除的生命週期。</p>
+      </div>
       <div class="state-flow">
         <span class="state-pill start">Draft</span><span class="state-arrow">→</span>
         <span class="state-pill">PendingReview</span><span class="state-arrow">→</span>
@@ -1287,7 +1840,7 @@ stateDiagram-v2
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1331,6 +1884,10 @@ Removed --> [*]
         <p><span class="note-derived">【需求推導】</span> 狀態轉移對應 Sequence Diagram 步驟：建立訂單→導向付款→ECPay 回呼→解鎖授予。</p>
         <p><span class="note-assumed">【合理補充】</span> Failed / Expired 為金流標準設計。RefundRequested→Refunded 為消保法鑑賞期合理預設，建議保留設計空間。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示付款訂單從建立、等待付款、付款成功，到授予解鎖或退款的狀態轉換。</p>
+      </div>
       <div class="state-flow">
         <span class="state-pill start">Created</span><span class="state-arrow">→</span>
         <span class="state-pill">PendingPayment</span><span class="state-arrow">→</span>
@@ -1363,7 +1920,7 @@ stateDiagram-v2
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1406,6 +1963,10 @@ Refunded --> [*]
         <p><span class="note-derived">【需求推導】</span> 狀態對應需求中「名譽與誹謗風險」法遵重點（§十一）：資訊收集後需驗證才能發布，律師可提出申訴（Disputed），管理員可更正或隱藏。使用中性名稱「公開風險資訊」。</p>
         <p><span class="note-assumed">【合理補充】</span> Corrected 狀態保留修正前紀錄作為審計軌跡，不直接覆蓋原始資料，為法遵設計慣例。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示公開風險資訊從資料收集、驗證、發布，到申訴、更正、隱藏與移除的法遵處理流程。</p>
+      </div>
       <div class="state-flow">
         <span class="state-pill start">Collected</span><span class="state-arrow">→</span>
         <span class="state-pill">PendingVerification</span><span class="state-arrow">→</span>
@@ -1440,7 +2001,7 @@ stateDiagram-v2
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1483,6 +2044,10 @@ Removed --> [*]
         <div class="design-note-header">📐 設計說明</div>
         <p><span class="note-derived">【需求推導】</span> 14 個系統元件直接對應需求功能需求分類：搜尋（§7.1）、律師資料頁（§7.2）、風險資訊（§7.3）、事務所（§7.4）、付費機制（§7.5）、會員心得（§7.6）。</p>
         <p><span class="note-assumed">【合理補充】</span> Search Index（MeiliSearch / Elasticsearch）為支撐複合條件查詢的架構預設。Auth/Member Module 獨立拆分符合安全設計慣例（JWT / OAuth2）。Data Ingestion Module 為後台排程服務。</p>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示系統架構由 Public Web App、Admin Web Console、Backend API、核心模組、資料庫、搜尋索引、金流與外部資料來源組成。</p>
       </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
@@ -1539,7 +2104,7 @@ flowchart TB
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1615,6 +2180,10 @@ ExtData --> Ingest
         <p><span class="note-derived">【需求推導】</span> MVP 的主要骨幹是法院判決資料，其他資料來源包含律師公開資訊、新聞、社群資料與會員產出內容。資料匯入流程需支援來源可信度標記與搜尋索引更新。</p>
         <p><span class="note-assumed">【合理補充】</span> 資料解析、去重、建立 CaseProfile、更新 SearchIndex 是資料整理型平台的必要工程流程。實際資料來源 API 或爬取方式尚未定案，因此本圖只描述平台內部處理流程。</p>
       </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">報告重點</div>
+        <p>此圖展示法院判決、律師公開資訊、新聞與社群資料如何被匯入、解析、去重、標記可信度並更新搜尋索引。</p>
+      </div>
       <div class="mermaid-wrap">
         <div class="mermaid-wrap-header">
           <span class="mermaid-wrap-label">Mermaid · Activity</span>
@@ -1640,7 +2209,7 @@ flowchart TD
         </div>
       </div>
       <div class="code-toggle" onclick="toggleCode(this)">
-        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+        <span class="toggle-arrow">▶</span> 工程附錄：查看 PlantUML 原始碼
       </div>
       <div class="code-wrap">
         <div class="code-header">
@@ -1975,6 +2544,79 @@ endif
   }
 
   initMermaidDragPan();
+
+  // Sidebar collapse/expand (desktop)
+  function initSidebarZoom() {
+    const btn = document.getElementById('sidebarToggle');
+    if (!btn) return;
+
+    const storageKey = 'umlSidebarCollapsed';
+    const media = window.matchMedia('(max-width: 900px)');
+
+    const sync = () => {
+      const collapsed = document.body.classList.contains('sidebar-collapsed');
+      btn.textContent = collapsed ? '▶' : '◀';
+      btn.title = collapsed ? '展開側邊欄' : '收合側邊欄';
+      btn.setAttribute('aria-label', collapsed ? '展開側邊欄' : '收合側邊欄');
+      btn.setAttribute('aria-expanded', String(!collapsed));
+    };
+
+    const applyByViewport = () => {
+      if (media.matches) {
+        document.body.classList.remove('sidebar-collapsed');
+        sync();
+        return;
+      }
+      if (localStorage.getItem(storageKey) === '1') {
+        document.body.classList.add('sidebar-collapsed');
+      } else {
+        document.body.classList.remove('sidebar-collapsed');
+      }
+      sync();
+    };
+
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('sidebar-collapsed');
+      const collapsed = document.body.classList.contains('sidebar-collapsed');
+      localStorage.setItem(storageKey, collapsed ? '1' : '0');
+      sync();
+    });
+
+    media.addEventListener('change', applyByViewport);
+    applyByViewport();
+  }
+
+  initSidebarZoom();
+
+  // Presentation mode toggle
+  function initPresentationMode() {
+    const btn = document.getElementById('presentationToggle');
+    if (!btn) return;
+    const storageKey = 'umlPresentationMode';
+    const labelEl = btn.querySelector('.hero-btn-label');
+
+    const sync = () => {
+      const on = document.body.classList.contains('presentation-mode');
+      btn.classList.toggle('is-active', on);
+      btn.setAttribute('aria-pressed', String(on));
+      btn.title = on ? '退出展示模式' : '切換為適合課堂展示的模式';
+      if (labelEl) labelEl.textContent = on ? '退出展示模式' : '展示模式';
+    };
+
+    if (localStorage.getItem(storageKey) === '1') {
+      document.body.classList.add('presentation-mode');
+    }
+    sync();
+
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('presentation-mode');
+      const on = document.body.classList.contains('presentation-mode');
+      localStorage.setItem(storageKey, on ? '1' : '0');
+      sync();
+    });
+  }
+
+  initPresentationMode();
 
   // Entry animation
   const animObs = new IntersectionObserver((entries) => {
