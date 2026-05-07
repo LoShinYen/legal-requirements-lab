@@ -266,6 +266,8 @@
   }
   .mermaid-wrap-header {
     display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
     padding: 10px 16px;
     background: var(--surface); border-bottom: 1px solid var(--border);
   }
@@ -274,42 +276,76 @@
     text-transform: uppercase; letter-spacing: 0.1em;
   }
   .mermaid-wrap-filename { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg3); }
-  .mermaid-wrap-tools { display: flex; align-items: center; gap: 8px; }
-  .mermaid-zoom-tools { display: flex; align-items: center; gap: 6px; }
-  .mermaid-zoom-btn {
+  .mermaid-wrap-tools,
+  .diagram-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-left: auto;
+    max-width: 100%;
+  }
+  .mermaid-zoom-tools,
+  .diagram-toolbar-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    max-width: 100%;
+  }
+  .mermaid-zoom-btn,
+  .mermaid-fullscreen-btn,
+  .diagram-btn {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
     color: var(--fg3);
     background: transparent;
     border: 1px solid var(--border2);
-    border-radius: 4px;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
+    border-radius: 6px;
+    min-height: 30px;
+    padding: 0 10px;
     cursor: pointer;
     transition: all 0.15s;
     line-height: 1;
+    font-size: 12px;
+    white-space: nowrap;
   }
-  .mermaid-zoom-btn:hover { color: var(--fg); border-color: var(--fg3); }
-  .mermaid-zoom-level {
+  .mermaid-zoom-btn:hover,
+  .mermaid-fullscreen-btn:hover,
+  .diagram-btn:hover {
+    color: var(--fg);
+    border-color: var(--fg3);
+    background: rgba(168, 180, 204, 0.08);
+  }
+  .diagram-btn.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .mermaid-zoom-level,
+  .diagram-zoom-level {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--fg3);
-    min-width: 44px;
+    font-size: 12px;
+    color: var(--fg2);
+    min-width: 56px;
     text-align: center;
+    font-weight: 500;
   }
-  .mermaid-fullscreen-btn {
+  .diagram-hint {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--fg3);
-    background: transparent;
-    border: 1px solid var(--border2);
-    border-radius: 4px;
+    background: rgba(10, 14, 26, 0.75);
+    border: 1px solid var(--border);
+    border-radius: 999px;
     padding: 4px 10px;
-    cursor: pointer;
-    transition: all 0.15s;
+    pointer-events: none;
+    z-index: 2;
   }
-  .mermaid-fullscreen-btn:hover { color: var(--fg); border-color: var(--fg3); }
   .mermaid-wrap:fullscreen {
     margin: 0;
     border-radius: 0;
@@ -318,31 +354,47 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: #060a12;
+  }
+  .mermaid-wrap:fullscreen .mermaid-wrap-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    min-height: 56px;
+    background: rgba(15, 21, 36, 0.96);
+    backdrop-filter: blur(10px);
   }
   .mermaid-wrap:fullscreen .mermaid-body {
     flex: 1;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 24px;
+    min-height: 0;
+    height: calc(100vh - 64px);
+    padding: 32px;
+    align-items: center;
+    justify-content: center;
     overflow: auto;
   }
   .mermaid-wrap:fullscreen .mermaid-body svg {
     max-width: none;
-    max-height: calc(100vh - 90px);
+    max-height: none;
   }
   .mermaid-body {
+    position: relative;
     padding: 32px 24px;
-    display: flex; justify-content: flex-start; align-items: flex-start;
+    display: flex; justify-content: center; align-items: center;
     overflow: auto;
-    min-height: 120px;
+    min-height: 320px;
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
     overscroll-behavior: contain;
   }
   .mermaid-body.dragging { cursor: grabbing; }
-  .mermaid-body svg { max-width: 100%; height: auto; }
+  .mermaid-body svg {
+    max-width: none;
+    height: auto;
+    display: block;
+    transform-origin: center center;
+  }
 
   /* COLLAPSIBLE CODE */
   .code-toggle {
@@ -650,7 +702,15 @@
   body.presentation-mode .code-wrap { display: none !important; }
   body.presentation-mode .design-note p,
   body.presentation-mode .presentation-note p { font-size: 15.5px; }
-  body.presentation-mode .mermaid-body { min-height: 360px; }
+  body.presentation-mode .mermaid-body { min-height: 460px; }
+  body.presentation-mode .diagram-btn,
+  .mermaid-wrap:fullscreen .diagram-btn {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  body.presentation-mode .diagram-zoom-level,
+  .mermaid-wrap:fullscreen .diagram-zoom-level { font-size: 13px; }
   body.presentation-mode .overview-table { font-size: 14.5px; }
   body.presentation-mode .section-title-group h2 { font-size: 28px; }
   body.presentation-mode .roadmap-card-desc,
@@ -704,7 +764,16 @@
       white-space: nowrap;
     }
     .card-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
-    .mermaid-body { padding: 18px 14px; }
+    .mermaid-body {
+      padding: 18px 14px;
+      min-height: 280px;
+    }
+    .diagram-hint {
+      position: static;
+      margin-top: 8px;
+      border-radius: 8px;
+      width: fit-content;
+    }
   }
 
   @media (max-width: 560px) {
@@ -729,6 +798,8 @@
     .sidebar-toggle-btn,
     .mermaid-fullscreen-btn,
     .mermaid-zoom-tools,
+    .diagram-toolbar,
+    .diagram-hint,
     .code-toggle,
     .code-wrap,
     .hero-actions {
@@ -2298,7 +2369,7 @@ endif
       secondaryColor: '#0f1524',
       tertiaryColor: '#141929',
       fontFamily: 'Noto Sans TC, sans-serif',
-      fontSize: '13px',
+      fontSize: '14px',
       // sequence
       actorBkg: '#1a2035',
       actorBorder: '#344060',
@@ -2365,150 +2436,196 @@ endif
     wrap.classList.toggle('open');
   }
 
-  // Mermaid fullscreen toggle
-  function syncMermaidFullscreenButtons() {
-    const active = document.fullscreenElement;
-    document.querySelectorAll('.mermaid-fullscreen-btn').forEach(btn => {
-      const inFullscreen = btn.closest('.mermaid-wrap') === active;
-      btn.textContent = inFullscreen ? '離開全螢幕' : '全螢幕';
-    });
-  }
+  function initDiagramViewers() {
+    const viewers = [];
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 4.0;
+    const ZOOM_STEP = 0.1;
+    const MAX_FIT_SCALE = 1.25;
+    let lastFullscreenWrap = null;
 
-  function initMermaidFullscreenButtons() {
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const getMinReadableScale = (wrap) => {
+      if (wrap.matches(':fullscreen')) return 0.95;
+      return document.body.classList.contains('presentation-mode') ? 1.0 : 0.85;
+    };
+
+    const waitForSvg = (body, callback, attempt = 0) => {
+      const svg = body.querySelector('svg');
+      if (svg) {
+        callback(svg);
+        return;
+      }
+      if (attempt > 120) return;
+      requestAnimationFrame(() => waitForSvg(body, callback, attempt + 1));
+    };
+
+    const getSvgSize = (svg) => {
+      let w = 0;
+      let h = 0;
+      if (svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width > 0 && svg.viewBox.baseVal.height > 0) {
+        w = svg.viewBox.baseVal.width;
+        h = svg.viewBox.baseVal.height;
+      }
+      if (!w || !h) {
+        let box = null;
+        try {
+          box = svg.getBBox ? svg.getBBox() : null;
+        } catch (_) {
+          box = null;
+        }
+        if (box && box.width > 0 && box.height > 0) {
+          w = box.width;
+          h = box.height;
+        }
+      }
+      if (!w || !h) {
+        const rect = svg.getBoundingClientRect();
+        w = rect.width || 800;
+        h = rect.height || 480;
+      }
+      return { width: w, height: h };
+    };
+
+    const centerDiagram = (body) => {
+      body.scrollLeft = Math.max(0, (body.scrollWidth - body.clientWidth) / 2);
+      body.scrollTop = Math.max(0, (body.scrollHeight - body.clientHeight) / 2);
+    };
+
     document.querySelectorAll('.mermaid-wrap').forEach((wrap) => {
       const header = wrap.querySelector('.mermaid-wrap-header');
+      const body = wrap.querySelector('.mermaid-body');
       const filename = wrap.querySelector('.mermaid-wrap-filename');
-      if (!header || !filename || header.querySelector('.mermaid-fullscreen-btn')) return;
+      if (!header || !body || !filename) return;
+      if (wrap.dataset.diagramViewerInit === '1') return;
+      wrap.dataset.diagramViewerInit = '1';
 
-      const tools = document.createElement('div');
-      tools.className = 'mermaid-wrap-tools';
-      filename.parentNode.insertBefore(tools, filename);
-      tools.appendChild(filename);
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-wrap-tools diagram-toolbar';
+      const group = document.createElement('div');
+      group.className = 'mermaid-zoom-tools diagram-toolbar-group';
 
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'mermaid-fullscreen-btn';
-      btn.textContent = '全螢幕';
-      btn.addEventListener('click', async () => {
+      const createBtn = (label, title, className = '') => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = ['diagram-btn', className].filter(Boolean).join(' ');
+        btn.textContent = label;
+        btn.title = title;
+        return btn;
+      };
+
+      const zoomOutBtn = createBtn('－', '縮小圖表');
+      const zoomInBtn = createBtn('＋', '放大圖表');
+      const fitBtn = createBtn('適合寬度', '將圖表縮放到容器寬度');
+      const originalBtn = createBtn('原始大小', '以 Mermaid SVG 原始尺寸顯示');
+      const centerBtn = createBtn('置中', '將圖表移回中央');
+      const fullscreenBtn = createBtn('全螢幕', '全螢幕檢視圖表', 'primary mermaid-fullscreen-btn');
+      const zoomLevel = document.createElement('span');
+      zoomLevel.className = 'mermaid-zoom-level diagram-zoom-level';
+      zoomLevel.textContent = '100%';
+
+      group.appendChild(zoomOutBtn);
+      group.appendChild(zoomInBtn);
+      group.appendChild(zoomLevel);
+      group.appendChild(fitBtn);
+      group.appendChild(originalBtn);
+      group.appendChild(centerBtn);
+      group.appendChild(fullscreenBtn);
+      toolbar.appendChild(group);
+      filename.insertAdjacentElement('afterend', toolbar);
+
+      const hint = document.createElement('div');
+      hint.className = 'diagram-hint';
+      hint.textContent = '拖曳移動畫布 · Ctrl/⌘ + 滾輪縮放 · 雙擊重置';
+      body.appendChild(hint);
+
+      const state = {
+        mode: 'fit-width',
+        scale: 1,
+        originalWidth: 0,
+        originalHeight: 0,
+        svg: null,
+      };
+
+      const applyScale = (nextScale, options = {}) => {
+        if (!state.svg || !state.originalWidth) return;
+        const prevScale = state.scale;
+        const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+        state.scale = scale;
+        state.svg.style.maxWidth = 'none';
+        state.svg.style.width = Math.round(state.originalWidth * scale) + 'px';
+        state.svg.style.height = 'auto';
+        zoomLevel.textContent = Math.round(scale * 100) + '%';
+
+        if (options.center) {
+          centerDiagram(body);
+          return;
+        }
+        if (!options.keepView || prevScale <= 0) return;
+        const cx = (body.scrollLeft + body.clientWidth / 2) / prevScale;
+        const cy = (body.scrollTop + body.clientHeight / 2) / prevScale;
+        body.scrollLeft = Math.max(0, cx * scale - body.clientWidth / 2);
+        body.scrollTop = Math.max(0, cy * scale - body.clientHeight / 2);
+      };
+
+      const getFitWidthScale = () => {
+        if (!state.originalWidth) return 1;
+        const fitScale = body.clientWidth / state.originalWidth;
+        return clamp(fitScale, getMinReadableScale(wrap), MAX_FIT_SCALE);
+      };
+
+      const setMode = (mode, options = {}) => {
+        state.mode = mode;
+        if (mode === 'original') {
+          applyScale(1, options);
+        } else if (mode === 'fit-width') {
+          applyScale(getFitWidthScale(), options);
+        } else {
+          applyScale(state.scale, options);
+        }
+      };
+
+      const resetDiagram = () => {
+        setMode('fit-width', { center: true });
+      };
+
+      fitBtn.addEventListener('click', () => setMode('fit-width', { center: true }));
+      originalBtn.addEventListener('click', () => setMode('original', { center: true }));
+      centerBtn.addEventListener('click', () => centerDiagram(body));
+      zoomInBtn.addEventListener('click', () => {
+        state.mode = 'custom';
+        applyScale(state.scale + ZOOM_STEP, { keepView: true });
+      });
+      zoomOutBtn.addEventListener('click', () => {
+        state.mode = 'custom';
+        applyScale(state.scale - ZOOM_STEP, { keepView: true });
+      });
+      fullscreenBtn.addEventListener('click', async () => {
         try {
           if (document.fullscreenElement === wrap) {
             await document.exitFullscreen();
           } else {
+            lastFullscreenWrap = wrap;
             await wrap.requestFullscreen();
           }
         } catch (err) {
           console.error('Fullscreen toggle failed:', err);
         }
       });
-      tools.appendChild(btn);
 
-      const body = wrap.querySelector('.mermaid-body');
-      if (!body) return;
-
-      const zoomTools = document.createElement('div');
-      zoomTools.className = 'mermaid-zoom-tools';
-
-      const zoomOutBtn = document.createElement('button');
-      zoomOutBtn.type = 'button';
-      zoomOutBtn.className = 'mermaid-zoom-btn';
-      zoomOutBtn.textContent = '-';
-
-      const zoomLevel = document.createElement('span');
-      zoomLevel.className = 'mermaid-zoom-level';
-      zoomLevel.textContent = '100%';
-
-      const zoomInBtn = document.createElement('button');
-      zoomInBtn.type = 'button';
-      zoomInBtn.className = 'mermaid-zoom-btn';
-      zoomInBtn.textContent = '+';
-
-      const zoomResetBtn = document.createElement('button');
-      zoomResetBtn.type = 'button';
-      zoomResetBtn.className = 'mermaid-zoom-btn';
-      zoomResetBtn.textContent = '1:1';
-
-      let zoom = 1;
-      const minZoom = 0.5;
-      const maxZoom = 4;
-      const step = 0.05;
-      let targetSvg = null;
-      const resolveSvg = (attempt = 0) => {
-        targetSvg = body.querySelector('svg');
-        if (targetSvg || attempt > 120) return;
-        requestAnimationFrame(() => resolveSvg(attempt + 1));
-      };
-      resolveSvg();
-      const applyZoom = () => {
-        if (!targetSvg) {
-          resolveSvg();
-          zoomLevel.textContent = Math.round(zoom * 100) + '%';
-          return;
-        }
-        // 定義：100% = 自動貼齊容器（可讀、直覺）；其他倍率用固定寬度縮放並可拖曳/捲動閱讀
-        const z = Math.round(zoom * 100) / 100;
-        if (z === 1) {
-          targetSvg.style.width = '';
-          targetSvg.style.height = '';
-          targetSvg.style.maxWidth = '100%';
-        } else {
-          const fitWidth = Math.max(320, body.clientWidth || 0);
-          targetSvg.style.maxWidth = 'none';
-          targetSvg.style.width = Math.round(fitWidth * z) + 'px';
-          targetSvg.style.height = 'auto';
-        }
-        zoomLevel.textContent = Math.round(zoom * 100) + '%';
-      };
-
-      zoomOutBtn.addEventListener('click', () => {
-        zoom = Math.max(minZoom, +(zoom - step).toFixed(2));
-        applyZoom();
-      });
-      zoomInBtn.addEventListener('click', () => {
-        zoom = Math.min(maxZoom, +(zoom + step).toFixed(2));
-        applyZoom();
-      });
-      zoomResetBtn.addEventListener('click', () => {
-        zoom = 1;
-        applyZoom();
-      });
-
-      zoomTools.appendChild(zoomOutBtn);
-      zoomTools.appendChild(zoomLevel);
-      zoomTools.appendChild(zoomInBtn);
-      zoomTools.appendChild(zoomResetBtn);
-      tools.insertBefore(zoomTools, btn);
-      applyZoom();
-    });
-    syncMermaidFullscreenButtons();
-  }
-
-  document.addEventListener('fullscreenchange', syncMermaidFullscreenButtons);
-  initMermaidFullscreenButtons();
-
-  // Drag-to-pan for Mermaid diagrams (scroll container)
-  function initMermaidDragPan() {
-    document.querySelectorAll('.mermaid-body').forEach((body) => {
-      if (body.dataset.dragpan === '1') return;
-      body.dataset.dragpan = '1';
-
+      // Drag-to-pan
       let isDown = false;
       let startX = 0;
       let startY = 0;
       let startScrollLeft = 0;
       let startScrollTop = 0;
       let pointerId = null;
-
-      const isInteractiveEl = (el) => {
-        if (!el) return false;
-        return !!el.closest('button,a,input,textarea,select,label,.mermaid-wrap-header');
-      };
+      const isInteractiveEl = (el) => !!el?.closest('button,a,input,textarea,select,label,.mermaid-wrap-header');
 
       body.addEventListener('pointerdown', (e) => {
-        if (e.button !== undefined && e.button !== 0) return; // left click only
+        if (e.button !== undefined && e.button !== 0) return;
         if (isInteractiveEl(e.target)) return;
-        // Only enable when there's something to pan
         if (body.scrollWidth <= body.clientWidth && body.scrollHeight <= body.clientHeight) return;
-
         isDown = true;
         pointerId = e.pointerId;
         startX = e.clientX;
@@ -2516,7 +2633,6 @@ endif
         startScrollLeft = body.scrollLeft;
         startScrollTop = body.scrollTop;
         body.classList.add('dragging');
-
         try { body.setPointerCapture(pointerId); } catch (_) {}
         e.preventDefault();
       }, { passive: false });
@@ -2524,26 +2640,89 @@ endif
       body.addEventListener('pointermove', (e) => {
         if (!isDown) return;
         if (pointerId !== null && e.pointerId !== pointerId) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        body.scrollLeft = startScrollLeft - dx;
-        body.scrollTop = startScrollTop - dy;
+        body.scrollLeft = startScrollLeft - (e.clientX - startX);
+        body.scrollTop = startScrollTop - (e.clientY - startY);
         e.preventDefault();
       }, { passive: false });
 
-      const end = () => {
+      const endDrag = () => {
         isDown = false;
         pointerId = null;
         body.classList.remove('dragging');
       };
+      body.addEventListener('pointerup', endDrag);
+      body.addEventListener('pointercancel', endDrag);
+      body.addEventListener('pointerleave', endDrag);
 
-      body.addEventListener('pointerup', end);
-      body.addEventListener('pointercancel', end);
-      body.addEventListener('pointerleave', end);
+      body.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        resetDiagram();
+      }, { passive: false });
+
+      body.addEventListener('wheel', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          state.mode = 'custom';
+          const delta = e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP;
+          applyScale(state.scale + delta, { keepView: true });
+          return;
+        }
+        if (e.shiftKey) {
+          body.scrollLeft += e.deltaY;
+          return;
+        }
+      }, { passive: false });
+
+      waitForSvg(body, (svg) => {
+        state.svg = svg;
+        const size = getSvgSize(svg);
+        state.originalWidth = size.width;
+        state.originalHeight = size.height;
+        resetDiagram();
+      });
+
+      viewers.push({
+        wrap,
+        refresh() {
+          if (!state.svg) return;
+          if (state.mode === 'fit-width') {
+            applyScale(getFitWidthScale());
+          } else {
+            applyScale(state.scale);
+          }
+        },
+        syncFullscreenLabel() {
+          fullscreenBtn.textContent = document.fullscreenElement === wrap ? '離開全螢幕' : '全螢幕';
+        },
+        onFullscreenChanged() {
+          this.syncFullscreenLabel();
+          if (!state.svg) return;
+          if (document.fullscreenElement === wrap) {
+            lastFullscreenWrap = wrap;
+            setMode('fit-width', { center: true });
+          } else if (document.fullscreenElement === null && lastFullscreenWrap === wrap) {
+            resetDiagram();
+            lastFullscreenWrap = null;
+          }
+        },
+      });
     });
+
+    const refreshAllViewers = () => viewers.forEach(v => v.refresh());
+    const syncAllFullscreenLabels = () => viewers.forEach(v => v.syncFullscreenLabel());
+    document.addEventListener('fullscreenchange', () => viewers.forEach(v => v.onFullscreenChanged()));
+    window.addEventListener('resize', refreshAllViewers);
+    syncAllFullscreenLabels();
+
+    const bodyClassObserver = new MutationObserver((mutations) => {
+      const classChanged = mutations.some(m => m.attributeName === 'class');
+      if (classChanged) refreshAllViewers();
+    });
+    bodyClassObserver.observe(document.body, { attributes: true });
   }
 
-  initMermaidDragPan();
+  initDiagramViewers();
 
   // Sidebar collapse/expand (desktop)
   function initSidebarZoom() {
