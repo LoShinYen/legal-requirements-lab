@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>律師案件圖譜 — UML 系統設計規格</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1524;
+    --bg3: #141929;
+    --surface: #1a2035;
+    --surface2: #1f2740;
+    --border: #2a3350;
+    --border2: #344060;
+    --fg: #e8edf8;
+    --fg2: #a8b4cc;
+    --fg3: #6b7a99;
+    --accent: oklch(65% 0.15 205);
+    --accent2: oklch(72% 0.14 158);
+    --accent3: oklch(68% 0.13 260);
+    --accent-dim: oklch(65% 0.15 205 / 0.15);
+    --accent2-dim: oklch(72% 0.14 158 / 0.12);
+    --warn: oklch(72% 0.18 55);
+    --code-bg: #060a12;
+    --radius: 8px;
+    --sidebar-w: 280px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .sidebar-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fg);
+    line-height: 1.4;
+  }
+  .sidebar-meta {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--fg3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sidebar-nav { padding: 16px 0; flex: 1; }
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg3);
+    padding: 12px 24px 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 24px;
+    color: var(--fg2);
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+  }
+  .nav-item:hover { color: var(--fg); background: var(--surface); border-left-color: var(--border2); }
+  .nav-item.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
+  .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg3); min-width: 22px; }
+  .nav-item.active .nav-num { color: var(--accent); }
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--fg3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg3) 50%, #0d1530 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 72px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, oklch(65% 0.15 205 / 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-dim);
+    border: 1px solid oklch(65% 0.15 205 / 0.3);
+    border-radius: 20px; padding: 4px 14px 4px 10px;
+    font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    color: var(--accent); margin-bottom: 20px;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hero h1 {
+    font-family: 'Noto Serif TC', serif; font-size: 42px; font-weight: 700;
+    line-height: 1.25; color: var(--fg); margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub { font-size: 17px; color: var(--fg2); max-width: 600px; line-height: 1.6; margin-bottom: 32px; }
+  .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 3px; }
+  .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 500; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--fg3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* CONTENT */
+  .content { padding: 0 72px 80px; }
+
+  /* DIAGRAM SECTION */
+  .diagram-section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  .diagram-section:last-child { border-bottom: none; }
+  .section-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 32px; }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--fg3);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 10px; white-space: nowrap; margin-top: 4px; flex-shrink: 0;
+  }
+  .section-title-group h2 {
+    font-family: 'Noto Serif TC', serif; font-size: 26px; font-weight: 700;
+    color: var(--fg); line-height: 1.3; margin-bottom: 6px;
+  }
+  .section-title-group .section-en { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
+
+  /* DESIGN NOTE */
+  .design-note {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2); border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 24px;
+  }
+  .design-note-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--accent2); margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .design-note p { font-size: 14px; color: var(--fg2); line-height: 1.7; }
+  .design-note p + p { margin-top: 10px; }
+  .note-derived { color: var(--accent2); font-weight: 500; }
+  .note-assumed { color: var(--warn); font-weight: 500; }
+  .legend { display: flex; gap: 20px; margin-top: 14px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: var(--fg3); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* MERMAID DIAGRAM WRAP */
+  .mermaid-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .mermaid-wrap-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .mermaid-wrap-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .mermaid-wrap-filename { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg3); }
+  .mermaid-wrap-tools { display: flex; align-items: center; gap: 8px; }
+  .mermaid-zoom-tools { display: flex; align-items: center; gap: 6px; }
+  .mermaid-zoom-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg3);
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .mermaid-zoom-btn:hover { color: var(--fg); border-color: var(--fg3); }
+  .mermaid-zoom-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg3);
+    min-width: 44px;
+    text-align: center;
+  }
+  .mermaid-fullscreen-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg3);
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mermaid-fullscreen-btn:hover { color: var(--fg); border-color: var(--fg3); }
+  .mermaid-wrap:fullscreen {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .mermaid-wrap:fullscreen .mermaid-body {
+    flex: 1;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 24px;
+    overflow: auto;
+  }
+  .mermaid-wrap:fullscreen .mermaid-body svg {
+    max-width: none;
+    max-height: calc(100vh - 90px);
+  }
+  .mermaid-body {
+    padding: 32px 24px;
+    display: flex; justify-content: flex-start; align-items: flex-start;
+    overflow: auto;
+    min-height: 120px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: contain;
+  }
+  .mermaid-body.dragging { cursor: grabbing; }
+  .mermaid-body svg { max-width: 100%; height: auto; }
+
+  /* COLLAPSIBLE CODE */
+  .code-toggle {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--fg3);
+    margin-bottom: 4px; transition: all 0.15s; user-select: none;
+  }
+  .code-toggle:hover { color: var(--fg2); border-color: var(--border2); }
+  .code-toggle .toggle-arrow { transition: transform 0.2s; font-size: 10px; }
+  .code-toggle.open .toggle-arrow { transform: rotate(90deg); }
+
+  .code-wrap {
+    display: none;
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 8px;
+  }
+  .code-wrap.open { display: block; }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
+  .code-filename { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg3); }
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--fg3);
+    background: transparent; border: 1px solid var(--border2); border-radius: 4px;
+    padding: 3px 10px; cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--fg); border-color: var(--fg3); }
+  .copy-btn.copied { color: var(--accent2); border-color: var(--accent2); }
+  .code-body { overflow-x: auto; max-height: 480px; }
+  pre {
+    padding: 20px 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.7; color: #c9d5ef; white-space: pre; tab-size: 2;
+  }
+
+  /* TAGS & TABLES */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .tag-derived { background: var(--accent2-dim); color: var(--accent2); }
+  .tag-assumed { background: oklch(72% 0.18 55 / 0.12); color: var(--warn); }
+
+  .overview-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 20px 0; }
+  .overview-table th {
+    text-align: left; padding: 10px 14px; background: var(--surface);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--fg3); font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid var(--border);
+  }
+  .overview-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--fg2); vertical-align: top; }
+  .overview-table tr:hover td { background: var(--surface); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 12px; margin: 20px 0; }
+  .actor-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+  .actor-card-name { font-size: 13px; font-weight: 500; color: var(--fg); margin-bottom: 4px; }
+  .actor-card-en { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 8px; }
+  .actor-card-desc { font-size: 12px; color: var(--fg3); line-height: 1.5; }
+
+  .state-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px; background: var(--surface); border-radius: var(--radius); margin: 16px 0; }
+  .state-pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-family: 'JetBrains Mono', monospace; border: 1px solid var(--border2); color: var(--fg2); background: var(--bg3); }
+  .state-pill.start { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .state-pill.end { border-color: #4a3060; color: oklch(68% 0.13 310); background: oklch(68% 0.13 310 / 0.1); }
+  .state-pill.warn { border-color: oklch(72% 0.18 55 / 0.4); color: var(--warn); background: oklch(72% 0.18 55 / 0.1); }
+  .state-pill.success { border-color: oklch(72% 0.14 158 / 0.4); color: var(--accent2); background: var(--accent2-dim); }
+  .state-arrow { color: var(--fg3); font-size: 14px; }
+
+  #scrolltop {
+    position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px;
+    background: var(--surface2); border: 1px solid var(--border2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--fg3); font-size: 18px; transition: all 0.2s;
+    opacity: 0; pointer-events: none;
+  }
+  #scrolltop.visible { opacity: 1; pointer-events: all; }
+  #scrolltop:hover { color: var(--fg); border-color: var(--fg3); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">UML 設計規格</div>
+    <div class="sidebar-title">律師案件圖譜</div>
+    <div class="sidebar-meta">MVP v1.0 · 2026-05-07</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">概覽</div>
+    <a class="nav-item active" href="#overview"><span class="nav-num">00</span> 設計概覽</a>
+    <a class="nav-item" href="#glossary"><span class="nav-num">00-1</span> 詞彙表 Glossary</a>
+    <a class="nav-item" href="#uml-guide"><span class="nav-num">00-2</span> UML 圖表功能說明</a>
+    <a class="nav-item" href="#traceability"><span class="nav-num">00-3</span> 需求追蹤矩陣</a>
+    <div class="nav-section-label" style="margin-top:8px;">UML 圖表</div>
+    <a class="nav-item" href="#uc"><span class="nav-num">01</span> Use Case Diagram</a>
+    <a class="nav-item" href="#act-search"><span class="nav-num">02</span> 搜尋律師 Activity</a>
+    <a class="nav-item" href="#seq-pay"><span class="nav-num">03</span> 付費解鎖 Sequence</a>
+    <a class="nav-item" href="#act-review"><span class="nav-num">04</span> 心得審核 Activity</a>
+    <a class="nav-item" href="#class"><span class="nav-num">05</span> Class Diagram</a>
+    <a class="nav-item" href="#sm-review"><span class="nav-num">06</span> Review 狀態機</a>
+    <a class="nav-item" href="#sm-payment"><span class="nav-num">07</span> PaymentOrder 狀態機</a>
+    <a class="nav-item" href="#sm-risk"><span class="nav-num">08</span> RiskInfo 狀態機</a>
+    <a class="nav-item" href="#component"><span class="nav-num">09</span> Component Diagram</a>
+    <a class="nav-item" href="#act-ingestion"><span class="nav-num">10</span> 資料匯入 Activity</a>
+    <a class="nav-item" href="#access-control"><span class="nav-num">11</span> 權限矩陣</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div>民事案件 · 近五年資料</div>
+    <div style="margin-top:4px; color: var(--accent)">MVP 範圍</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">MVP · 民事案件 · 搜尋型平台</div>
+    <h1>律師案件圖譜<br><span>UML 系統設計規格</span></h1>
+    <p class="hero-sub">適合工程設計階段使用的系統分析文件。涵蓋 Use Case、Activity、Sequence、Class、State Machine 與 Component 圖表。</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-val">10</span><span class="stat-label">UML 圖表</span></div>
+      <div class="stat"><span class="stat-val">7</span><span class="stat-label">核心 Actors</span></div>
+      <div class="stat"><span class="stat-val">10</span><span class="stat-label">Domain Classes</span></div>
+      <div class="stat"><span class="stat-val">14</span><span class="stat-label">系統模組</span></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- 00 OVERVIEW -->
+    <section class="diagram-section" id="overview">
+      <div class="section-header">
+        <span class="section-num">00</span>
+        <div class="section-title-group">
+          <h2>設計概覽</h2>
+          <span class="section-en">Design Overview</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📋 文件說明</div>
+        <p>本文件依據「律師案件圖譜需求訪談正式版 v1.0」產出。每張 UML 圖均標示「需求推導」與「合理補充」兩類來源，確保工程團隊能清楚辨識哪些設計決策有需求依據、哪些是 UML 完整性的合理假設。所有圖表使用 Mermaid.js 在瀏覽器端即時渲染，無需安裝任何工具。</p>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:var(--accent2)"></span>需求文件明確推導</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span>為 UML 完整性補充的合理假設</div>
+        </div>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>編號</th><th>圖表類型</th><th>主要描述</th><th>來源</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">01</code></td><td>Use Case Diagram</td><td>7 個 Actor、主要 Use Case 群組</td><td><span class="tag tag-derived">需求推導</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">02</code></td><td>Activity Diagram</td><td>搜尋律師複合查詢、候選名單、付費解鎖入口</td><td><span class="tag tag-derived">需求推導</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">03</code></td><td>Sequence Diagram</td><td>付費解鎖完整流程，含 ECPay 回呼</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">部分補充</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">04</code></td><td>Activity Diagram</td><td>會員心得投稿、規則檢查、管理員審核</td><td><span class="tag tag-derived">需求推導</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">05</code></td><td>Class Diagram</td><td>10 個核心 Domain 類別，完整關聯標示</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">屬性補充</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">06</code></td><td>State Machine</td><td>Review 7 個狀態：Draft → Published / Removed</td><td><span class="tag tag-derived">需求推導</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">07</code></td><td>State Machine</td><td>PaymentOrder 8 個狀態，含退款路徑</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">退款補充</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">08</code></td><td>State Machine</td><td>RiskInfo 8 個狀態，含爭議申訴路徑</td><td><span class="tag tag-derived">需求推導</span></td></tr>
+          <tr><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">09</code></td><td>Component Diagram</td><td>14 個系統元件，含搜尋索引與資料匯入</td><td><span class="tag tag-derived">需求推導</span> <span class="tag tag-assumed">架構補充</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 00-1 GLOSSARY -->
+    <section class="diagram-section" id="glossary">
+      <div class="section-header">
+        <span class="section-num">00-1</span>
+        <div class="section-title-group">
+          <h2>詞彙表 Glossary</h2>
+          <span class="section-en">Glossary</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📚 使用方式</div>
+        <p>本章節用於統一名詞與英文建議命名，避免在討論法遵、資料來源、權限與資料模型時產生歧義。請以表格的英文建議命名作為 Domain / API 命名基準（可依既有程式碼再做微調）。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>詞彙</th><th>英文建議命名</th><th>定義</th><th>備註</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>律師案件圖譜</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Lawyer Case Map</code></td><td>本平台名稱，定位為協助使用者查詢、比較律師與事務所的法律科技平台。</td><td>非法律諮詢平台</td></tr>
+          <tr><td>律師</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Lawyer</code></td><td>平台中被查詢與比較的主要對象。</td><td>來源應以公開資訊與判決資料為主</td></tr>
+          <tr><td>事務所</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">LawFirm</code></td><td>律師所屬組織，可作為背景與風評輔助資訊。</td><td>一位律師可隸屬一個主要事務所</td></tr>
+          <tr><td>案件輪廓</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">CaseProfile</code></td><td>根據公開判決資料整理出的案件類型、法院、年份、經驗摘要等資訊。</td><td>不等於勝率或能力評分</td></tr>
+          <tr><td>案件適配</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">CaseFit</code></td><td>系統根據案件類型、地區、經驗輪廓等資訊，輔助使用者篩選候選律師。</td><td>不應宣稱保證適合</td></tr>
+          <tr><td>公開風險資訊</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">RiskInfo</code></td><td>來自公開來源的風險、爭議、負面聲量等整理資訊。</td><td>應中性呈現</td></tr>
+          <tr><td>誠信風險觀測</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Integrity Risk Observation</code></td><td>對公開爭議與可信來源的觀測性描述。</td><td>避免使用「案底」等定性字眼</td></tr>
+          <tr><td>可信度分層</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">CredibilityLevel</code></td><td>對資料來源可信度進行分級，例如法院判決、官方資料、新聞、社群、會員心得。</td><td>用於 UI 標示與權重設計</td></tr>
+          <tr><td>會員心得</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Review</code></td><td>會員針對律師接觸、諮詢、委任流程等經驗提交的內容。</td><td>需審核、檢舉與下架機制</td></tr>
+          <tr><td>付費解鎖</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">PaidUnlock</code></td><td>使用者透過付款取得完整資訊或會員心得的存取權。</td><td>MVP 可先做單筆解鎖</td></tr>
+          <tr><td>已解鎖會員</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">UnlockedMember</code></td><td>已完成特定內容解鎖的會員。</td><td>比「付費會員」更精準</td></tr>
+          <tr><td>申訴</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Dispute / Complaint</code></td><td>律師或事務所針對平台內容提出更正、隱藏或下架請求。</td><td>法遵重要流程</td></tr>
+          <tr><td>檢舉</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Report</code></td><td>使用者針對會員心得或不當內容提出檢舉。</td><td>與申訴不同</td></tr>
+          <tr><td>隱藏</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Hidden</code></td><td>內容暫時不公開，但保留於後台。</td><td>可恢復</td></tr>
+          <tr><td>下架 / 移除</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Removed</code></td><td>內容不再公開，通常作為終局處理。</td><td>建議保留審計紀錄</td></tr>
+          <tr><td>更正</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">Corrected</code></td><td>經查證後修正內容。</td><td>不應直接覆蓋歷史紀錄</td></tr>
+          <tr><td>綠界</td><td><code style="font-family:JetBrains Mono,monospace;font-size:12px;color:var(--accent)">ECPay</code></td><td>第三方金流服務。</td><td>處理付款與回呼</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 00-2 UML GUIDE -->
+    <section class="diagram-section" id="uml-guide">
+      <div class="section-header">
+        <span class="section-num">00-2</span>
+        <div class="section-title-group">
+          <h2>UML 圖表功能說明</h2>
+          <span class="section-en">UML Diagram Guide</span>
+        </div>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>UML 圖表</th><th>本文件用途</th><th>適合閱讀者</th><th>回答的問題</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Use Case Diagram</td><td>描述系統有哪些角色，以及各角色可以使用哪些功能。</td><td>PM、SA、工程師、設計師</td><td>誰會使用系統？可以做什麼？</td></tr>
+          <tr><td>Activity Diagram</td><td>描述一個業務流程從開始到結束的步驟與判斷。</td><td>PM、SA、後端、前端</td><td>使用者或系統流程怎麼走？有哪些分支？</td></tr>
+          <tr><td>Sequence Diagram</td><td>描述前端、後端、資料庫、第三方服務之間的呼叫順序。</td><td>後端、前端、架構師</td><td>API 呼叫順序是什麼？誰呼叫誰？</td></tr>
+          <tr><td>Class Diagram</td><td>描述核心資料物件、欄位與關聯。</td><td>後端、DBA、架構師</td><td>系統有哪些核心資料表或物件？彼此怎麼關聯？</td></tr>
+          <tr><td>State Machine Diagram</td><td>描述某個物件的狀態如何轉換。</td><td>後端、QA、PM</td><td>訂單、心得、風險資訊有哪些狀態？什麼事件會改變狀態？</td></tr>
+          <tr><td>Component Diagram</td><td>描述系統模組與外部服務的依賴關係。</td><td>架構師、DevOps、後端</td><td>系統應該拆成哪些模組？資料怎麼流動？</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">🧭 補充說明</div>
+        <p>本文件中的 UML 圖表不是最終實作限制，而是 MVP 階段的系統分析基準。若後續需求、法遵策略、商業模式或資料來源發生變更，應同步更新對應 UML 圖表與 Domain Model。</p>
+      </div>
+    </section>
+
+    <!-- 00-3 TRACEABILITY -->
+    <section class="diagram-section" id="traceability">
+      <div class="section-header">
+        <span class="section-num">00-3</span>
+        <div class="section-title-group">
+          <h2>需求追蹤矩陣</h2>
+          <span class="section-en">Requirement Traceability Matrix</span>
+        </div>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>需求項目</th><th>對應 UML</th><th>對應類別 / 模組</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>複合條件搜尋律師</td><td>Use Case、Search Activity、Component Diagram</td><td>LawyerSearchModule、Lawyer、CaseProfile、SearchIndex</td></tr>
+          <tr><td>律師資料頁</td><td>Use Case、Class Diagram、Component Diagram</td><td>LawyerProfileModule、Lawyer、CaseProfile、RiskInfo</td></tr>
+          <tr><td>事務所資訊</td><td>Use Case、Class Diagram</td><td>LawFirm、Lawyer</td></tr>
+          <tr><td>公開風險資訊</td><td>Use Case、RiskInfo State Machine、Class Diagram</td><td>RiskInfo、DataSource、AdminModule</td></tr>
+          <tr><td>會員心得</td><td>Review Activity、Review State Machine、Class Diagram</td><td>Review、User、AdminModule</td></tr>
+          <tr><td>付費解鎖</td><td>Payment Sequence、PaymentOrder State Machine</td><td>PaymentOrder、UnlockRecord、PaymentModule、ECPay</td></tr>
+          <tr><td>申訴 / 更正 / 下架</td><td>Use Case、RiskInfo State Machine</td><td>Complaint、RiskInfo、AdminModule</td></tr>
+          <tr><td>資料匯入</td><td>Component Diagram、Data Ingestion Activity</td><td>DataIngestionModule、DataSource、CaseProfile</td></tr>
+          <tr><td>資料可信度分層</td><td>Class Diagram、RiskInfo State Machine</td><td>DataSource、RiskInfo.credibilityLevel</td></tr>
+          <tr><td>推薦可解釋性</td><td>Search Activity、Class Diagram</td><td>CaseProfile、RiskInfo、LawyerSearchModule</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 01 USE CASE -->
+    <section class="diagram-section" id="uc">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <div class="section-title-group">
+          <h2>Use Case Diagram</h2>
+          <span class="section-en">使用案例圖</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 7 個 Actor 均直接來自需求文件。Use Cases 依需求 §7 功能需求章節逐項對應。</p>
+        <p><span class="note-assumed">【合理補充】</span> 「查看搜尋結果」與「查看公開風險摘要」拆開為獨立 Use Case 以利後續權限控制設計。外部資料來源 Actor 的匯入 Use Cases 對應 MVP 資料匯入架構。</p>
+      </div>
+      <div class="card-grid">
+        <div class="actor-card"><div class="actor-card-name">訪客</div><div class="actor-card-en">Guest</div><div class="actor-card-desc">未登入，可搜尋與查看免費資訊</div></div>
+        <div class="actor-card"><div class="actor-card-name">會員</div><div class="actor-card-en">Member</div><div class="actor-card-desc">已登入，可投稿心得、檢舉、發起付費</div></div>
+        <div class="actor-card"><div class="actor-card-name">已解鎖會員</div><div class="actor-card-en">Unlocked Member</div><div class="actor-card-desc">已完成特定內容解鎖，可查看對應完整內容</div></div>
+        <div class="actor-card"><div class="actor-card-name">管理員</div><div class="actor-card-en">Admin</div><div class="actor-card-desc">審核心得、處理申訴、管理風險資訊</div></div>
+        <div class="actor-card"><div class="actor-card-name">律師 / 事務所</div><div class="actor-card-en">Lawyer Representative</div><div class="actor-card-desc">提出更正、申訴、下架請求</div></div>
+        <div class="actor-card"><div class="actor-card-name">綠界金流</div><div class="actor-card-en">ECPay</div><div class="actor-card-desc">處理付款並回呼結果</div></div>
+        <div class="actor-card"><div class="actor-card-name">外部資料來源</div><div class="actor-card-en">External Data Source</div><div class="actor-card-desc">法院判決、律師公開資訊、新聞、社群</div></div>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Use Case</span>
+          <span class="mermaid-wrap-filename">01_use_case_diagram</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+flowchart LR
+  Guest["👤 訪客\nGuest"]
+  Member["👤 會員\nMember"]
+  UnlockedMember["👤 已解鎖會員\nUnlocked Member"]
+  Admin["👤 管理員\nAdmin"]
+  LawyerRep["👤 律師/事務所\nLawyer Rep"]
+  ECPay["🏦 綠界金流\nECPay"]
+  ExtData["🗄️ 外部資料來源\nExternal Data"]
+
+  subgraph 搜尋與瀏覽
+    UC1("搜尋律師")
+    UC2("查看搜尋結果")
+    UC3("查看律師免費資料頁")
+    UC4("查看事務所資訊")
+    UC5("查看公開風險摘要")
+  end
+
+  subgraph 會員管理
+    UC6("註冊 / 登入")
+    UC7("發起付費解鎖")
+    UC8("查看付費內容")
+  end
+
+  subgraph 會員心得
+    UC9("投稿會員心得")
+    UC10("檢舉會員心得")
+    UC11("審核會員心得")
+  end
+
+  subgraph 管理功能
+    UC12("管理公開風險資訊")
+    UC13("處理申訴 / 更正")
+  end
+
+  subgraph 資料匯入
+    UC14("匯入法院判決資料")
+    UC15("匯入律師公開資訊")
+    UC16("匯入新聞 / 社群資料")
+  end
+
+  subgraph 金流處理
+    UC17("建立付款訂單")
+    UC18("回呼付款結果")
+  end
+
+  Guest --> UC1
+  Guest --> UC2
+  Guest --> UC3
+  Guest --> UC4
+  Guest --> UC5
+  Guest --> UC6
+
+  Member --> UC1
+  Member --> UC2
+  Member --> UC3
+  Member --> UC9
+  Member --> UC10
+  Member --> UC7
+
+  UnlockedMember --> UC8
+
+  Admin --> UC11
+  Admin --> UC12
+  Admin --> UC13
+
+  LawyerRep --> UC13
+  ECPay --> UC18
+
+  ExtData --> UC14
+  ExtData --> UC15
+  ExtData --> UC16
+  UC7 ..> UC17 : include
+  UC17 --> ECPay
+  UC18 --> UC8
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">01_use_case_diagram.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 01_use_case_diagram
+title 律師案件圖譜 — Use Case Diagram (MVP)
+
+actor "訪客 Guest" as Guest
+actor "會員 Member" as Member
+actor "已解鎖會員 Unlocked Member" as UnlockedMember
+actor "管理員 Admin" as Admin
+actor "律師/事務所 Lawyer Rep" as LawyerRep
+actor "綠界金流 ECPay" as ECPay
+actor "外部資料來源 External Data Source" as ExtData
+
+rectangle "律師案件圖譜系統" {
+  package "搜尋與瀏覽" {
+    usecase "搜尋律師" as UC1
+    usecase "查看搜尋結果" as UC2
+    usecase "查看律師免費資料頁" as UC3
+    usecase "查看事務所資訊" as UC4
+    usecase "查看公開風險摘要" as UC5
+  }
+  package "會員管理" {
+    usecase "註冊 / 登入" as UC6
+    usecase "發起付費解鎖" as UC7
+    usecase "查看付費內容" as UC8
+  }
+  package "會員心得" {
+    usecase "投稿會員心得" as UC9
+    usecase "檢舉會員心得" as UC10
+    usecase "審核會員心得" as UC11
+  }
+  package "管理功能" {
+    usecase "管理公開風險資訊" as UC12
+    usecase "處理申訴 / 更正" as UC13
+  }
+  package "資料匯入" {
+    usecase "匯入法院判決資料" as UC14
+    usecase "匯入律師公開資訊" as UC15
+    usecase "匯入新聞 / 社群資料" as UC16
+  }
+  package "金流處理" {
+    usecase "建立付款訂單" as UC17
+    usecase "回呼付款結果" as UC18
+  }
+}
+
+Guest --> UC1
+Guest --> UC2
+Guest --> UC3
+Guest --> UC4
+Guest --> UC5
+Guest --> UC6
+Member --|> Guest
+Member --> UC9
+Member --> UC10
+Member --> UC7
+UnlockedMember --|> Member
+UnlockedMember --> UC8
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+LawyerRep --> UC13
+UC7 ..> UC17 : <<include>>
+UC17 --> ECPay
+ECPay --> UC18
+UC18 --> UC8
+ExtData --> UC14
+ExtData --> UC15
+ExtData --> UC16
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 02 ACTIVITY SEARCH -->
+    <section class="diagram-section" id="act-search">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <div class="section-title-group">
+          <h2>Activity Diagram：搜尋律師流程</h2>
+          <span class="section-en">Search Lawyer Activity</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 搜尋條件包含姓名、案件類型、地區、事務所、爭議資訊、新聞聲量、案件經驗豐富度（需求 §7.1）。</p>
+        <p><span class="note-assumed">【合理補充】</span> 「系統驗證條件」（至少填入一項）為前端 UX 合理預設。「計算案件適配」對應需求 §九 推薦邏輯，具體演算法留待後續設計。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Activity</span>
+          <span class="mermaid-wrap-filename">02_search_lawyer_activity</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+flowchart TD
+  A([開始]) --> B["輸入複合查詢條件\n姓名、案件類型、地區\n事務所、爭議、聲量、經驗"]
+  B --> C{條件是否有效?}
+  C -- 否 --> D["顯示驗證錯誤訊息"] --> B
+  C -- 是 --> E["並行查詢"]
+
+  E --> F1["查詢律師基本資料"]
+  E --> F2["查詢案件輪廓\n近五年民事"]
+  E --> F3["查詢事務所資料"]
+  E --> F4["查詢公開風險摘要"]
+
+  F1 & F2 & F3 & F4 --> G["依案件適配度與風險提示\n排序候選名單"]
+  G --> H["顯示律師候選名單\n免費摘要資訊"]
+  H --> I{選擇律師?}
+  I -- 否 --> J["修改條件或結束"] --> Z1([結束])
+  I -- 是 --> K["查看律師免費資料頁\n姓名、背景、案件輪廓\n基礎風險提示、事務所"]
+  K --> L{查看付費內容?}
+  L -- 否 --> Z2([結束])
+  L -- 是 --> M["導向付費解鎖流程\n詳見 Sequence Diagram 03"]
+  M --> Z3([結束])
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">02_search_lawyer_activity.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 02_search_lawyer_activity
+title 搜尋律師流程 — Activity Diagram
+
+|使用者|
+start
+:輸入複合查詢條件\n（姓名、案件類型、地區、事務所、爭議、聲量）;
+
+|系統|
+if (條件是否有效？) then (否)
+  |使用者|
+  :顯示驗證錯誤訊息;
+  stop
+else (是)
+endif
+
+fork
+  :查詢律師基本資料;
+fork again
+  :查詢案件輪廓（近五年民事）;
+fork again
+  :查詢事務所資料;
+fork again
+  :查詢公開風險摘要;
+end fork
+
+:依案件適配度與風險提示排序候選名單;
+
+|使用者|
+:查看律師候選名單（免費摘要）;
+
+if (選擇律師？) then (是)
+  :查看律師免費資料頁;
+  if (查看付費內容？) then (是)
+    |系統|
+    :導向付費解鎖流程;
+  endif
+endif
+stop
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 03 SEQUENCE PAYMENT -->
+    <section class="diagram-section" id="seq-pay">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <div class="section-title-group">
+          <h2>Sequence Diagram：付費解鎖流程</h2>
+          <span class="section-en">Paid Unlock Sequence</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 付費解鎖使用綠界（ECPay）金流（需求 §7.5）。解鎖後建立 UnlockRecord，供後續查詢是否已解鎖。</p>
+        <p><span class="note-assumed">【合理補充】</span> Backend 檢查「已解鎖」邏輯（避免重複付款）為標準金流實作慣例。ECPay webhook 驗簽步驟為綠界標準串接規格。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Sequence</span>
+          <span class="mermaid-wrap-filename">03_unlock_paid_content_sequence</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+sequenceDiagram
+  actor User as 使用者 User
+  participant FE as Frontend 前端
+  participant BE as Backend API
+  participant PS as Payment Service
+  participant ECPay as ECPay 綠界
+  participant DB as Database
+
+  User->>FE: 點擊「解鎖完整資訊」
+  FE->>BE: POST /api/unlock/initiate
+
+  BE->>DB: 查詢 Session / JWT
+  DB-->>BE: 使用者資料
+
+  alt 未登入
+    BE-->>FE: 401 Unauthorized
+    FE-->>User: 引導至登入頁面
+  else 已登入
+    BE->>DB: 查詢 UnlockRecord
+    DB-->>BE: 查詢結果
+
+    alt 已解鎖
+      BE->>DB: 查詢付費內容
+      DB-->>BE: 完整內容
+      BE-->>FE: 200 回傳完整內容
+      FE-->>User: 顯示完整資訊（短路結束）
+    else 未解鎖
+      BE->>PS: 建立 PaymentOrder
+      PS->>DB: INSERT PaymentOrder (Created)
+      DB-->>PS: orderId
+      PS-->>BE: orderId
+
+      BE->>ECPay: 建立交易 {orderId, amount}
+      ECPay-->>BE: paymentUrl
+      BE-->>FE: paymentUrl
+      FE-->>User: 導向綠界付款頁面
+
+      User->>ECPay: 完成付款
+
+      ECPay->>BE: POST /api/payment/callback
+      BE->>PS: 驗證 checkMacValue
+
+      alt 驗證失敗
+        BE-->>ECPay: 回應 FAIL
+        BE-->>FE: 400/409 付款驗證失敗（不更新訂單、不建立解鎖）
+        FE-->>User: 顯示付款失敗
+      else 驗證成功
+        PS->>DB: UPDATE PaymentOrder (Paid)
+        PS->>DB: INSERT UnlockRecord
+        PS->>DB: UPDATE PaymentOrder (UnlockGranted)
+
+        BE-->>ECPay: 回應 OK
+        BE->>DB: 查詢完整付費內容
+        DB-->>BE: 完整資訊
+        BE-->>FE: 200 付款成功
+        FE-->>User: 顯示完整律師資料與會員心得
+      end
+    end
+  end
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">03_unlock_paid_content_sequence.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 03_unlock_paid_content_sequence
+title 付費解鎖流程 — Sequence Diagram
+
+participant "User 使用者" as User
+participant "Frontend 前端" as FE
+participant "Backend API" as BE
+participant "Payment Service" as PS
+participant "ECPay 綠界金流" as ECPay
+database "Database" as DB
+
+User -> FE : 點擊「解鎖完整資訊」
+FE -> BE : POST /api/unlock/initiate { lawyerId }
+BE -> DB : 查詢 Session / JWT Token
+DB --> BE : 使用者資料
+
+alt 未登入
+  BE --> FE : 401 Unauthorized
+  FE --> User : 引導至登入 / 註冊頁面
+else 已登入
+  BE -> DB : 查詢 UnlockRecord { userId, targetId }
+  DB --> BE : 查詢結果
+  alt 已解鎖
+    BE -> DB : 查詢付費內容
+    DB --> BE : 完整內容資料
+    BE --> FE : 200 已解鎖
+    FE --> User : 顯示完整資訊（短路結束）
+  else 未解鎖
+    BE -> PS : 建立 PaymentOrder
+    PS -> DB : INSERT PaymentOrder (status=Created)
+    DB --> PS : orderId
+    PS --> BE : orderId
+    BE -> ECPay : 建立交易 { orderId, amount }
+    ECPay --> BE : paymentUrl
+    BE --> FE : paymentUrl
+    FE --> User : 導向綠界付款頁面
+    User -> ECPay : 完成付款
+    ECPay -> BE : POST /api/payment/callback
+    BE -> PS : 驗證 checkMacValue
+    alt 驗證失敗
+      BE --> ECPay : 回應 FAIL
+      BE --> FE : 400/409 付款驗證失敗（不更新訂單、不建立解鎖）
+      FE --> User : 顯示付款失敗訊息
+    else 驗證成功
+      PS -> DB : UPDATE PaymentOrder (Paid)
+      PS -> DB : INSERT UnlockRecord
+      PS -> DB : UPDATE PaymentOrder (UnlockGranted)
+      BE --> ECPay : 回應 OK
+      BE -> DB : 查詢完整付費內容
+      DB --> BE : 完整資訊
+      BE --> FE : 200 付款成功
+      FE --> User : 顯示完整律師資料與會員心得
+    end
+  end
+end
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 04 ACTIVITY REVIEW -->
+    <section class="diagram-section" id="act-review">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <div class="section-title-group">
+          <h2>Activity Diagram：會員心得投稿與審核</h2>
+          <span class="section-en">Member Review Submission &amp; Moderation</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 審核流程包含「通過、拒絕、要求修改」三種結果（需求 §7.6、§十一）。「檢舉機制」與「下架機制」亦明確列於需求法遵重點。</p>
+        <p><span class="note-assumed">【合理補充】</span> 「系統自動規則檢查」（字數、禁用詞）為 UGC 平台慣例，為必要防護機制。「要求修改」後的再提交循環對應 Review 狀態機。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Activity</span>
+          <span class="mermaid-wrap-filename">04_member_review_activity</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+flowchart TD
+  A([開始]) --> B["會員填寫律師心得\n接觸經驗、諮詢體驗、委任流程"]
+  B --> C["提交心得（可選匿名）"]
+  C --> D{已登入?}
+  D -- 否 --> E["引導至登入頁面"] --> Z1([結束])
+  D -- 是 --> F["系統自動規則檢查\n字數、禁用詞、重複投稿"]
+  F --> G{通過規則?}
+  G -- 否 --> H["顯示規則違反提示"] --> Z2([結束])
+  G -- 是 --> I["建立 Review 記錄\nstatus = PendingReview"]
+  I --> J["通知管理員待審核"]
+  J --> K["管理員審核內容\n確認中立、可信、符合條款"]
+  K --> L{審核結果?}
+
+  L -- 通過 --> M["status = Published\n心得上架"]
+  M --> N["通知會員：心得已上架"] --> Z3([結束])
+
+  L -- 要求修改 --> O["status = NeedRevision\n通知會員修改原因"]
+  O --> P["會員修改心得內容"]
+  P --> F
+
+  L -- 拒絕 --> Q["status = Rejected\n通知會員拒絕原因"] --> Z4([結束])
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">04_member_review_activity.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 04_member_review_activity
+title 會員心得投稿與審核流程
+
+|會員 Member|
+start
+:填寫律師心得（接觸、諮詢、委任）;
+:提交心得（可選匿名）;
+
+|系統|
+if (已登入？) then (否)
+  :引導至登入頁面;
+  stop
+endif
+:自動規則檢查（字數、禁用詞）;
+if (通過規則？) then (否)
+  :顯示違規提示;
+  stop
+endif
+:建立 Review (status=PendingReview);
+:通知管理員;
+
+|管理員 Admin|
+:審核心得內容;
+if (審核結果？) then (通過)
+  :status = Published;
+  |系統|
+  :心得上架;
+  |會員 Member|
+  :通知「已上架」;
+else if (要求修改)
+  :status = NeedRevision;
+  :通知修改原因;
+  |會員 Member|
+  :修改後重新提交;
+else (拒絕)
+  :status = Rejected;
+  :通知拒絕原因;
+endif
+stop
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 05 CLASS DIAGRAM -->
+    <section class="diagram-section" id="class">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <div class="section-title-group">
+          <h2>Class Diagram / Domain Model</h2>
+          <span class="section-en">核心資料模型</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 10 個核心類別均來自需求文件。關聯規則皆為需求明確推導。DataSource.credibilityLevel 對應需求 §十二 的三層可信度分層。</p>
+        <p><span class="note-assumed">【合理補充】</span> 各類別的 createdAt / updatedAt 為 ORM 慣例。UnlockRecord.expiredAt 預設空值（無限期），未來訂閱制可填充。CaseProfile.civilCaseOnly = true 為 MVP 範圍標記。</p>
+        <p><span class="note-assumed">【合理補充】</span> Complaint 採多型 target 設計：Complaint.targetType 可為 Review、RiskInfo、LawyerProfile、LawFirmProfile；targetId 為目標物件主鍵。此設計在 MVP 階段較彈性，但資料一致性與授權需由應用層規則補強。</p>
+        <p><span class="note-assumed">【合理補充】</span> RiskInfo 採多型目標設計（targetType/targetId），可掛載於 Lawyer 或 LawFirm。資料庫外鍵約束需由應用層或資料一致性規則補強。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Class</span>
+          <span class="mermaid-wrap-filename">05_domain_class_diagram</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+classDiagram
+  class User {
+    +UUID id
+    +String email
+    +String displayName
+    +Enum role
+    +Enum membershipStatus
+    +DateTime createdAt
+  }
+  class Lawyer {
+    +UUID id
+    +String name
+    +String barAssociation
+    +String licenseNumber
+    +String region
+    +UUID lawFirmId
+    +Text summary
+  }
+  class LawFirm {
+    +UUID id
+    +String name
+    +String region
+    +Text publicBackground
+    +Text reputationSummary
+  }
+  class CaseProfile {
+    +UUID id
+    +UUID lawyerId
+    +String caseType
+    +String courtName
+    +Integer judgmentYear
+    +Boolean civilCaseOnly
+    +Text summary
+  }
+  class RiskInfo {
+    +UUID id
+    +Enum targetType
+    +UUID targetId
+    +Enum sourceType
+    +String title
+    +Enum credibilityLevel
+    +Enum riskLevel
+    +Enum status
+    +UUID dataSourceId
+  }
+  class Review {
+    +UUID id
+    +UUID userId
+    +UUID lawyerId
+    +Enum reviewType
+    +Text content
+    +Boolean anonymous
+    +Enum status
+  }
+  class PaymentOrder {
+    +UUID id
+    +UUID userId
+    +Enum targetType
+    +UUID targetId
+    +Decimal amount
+    +Enum provider
+    +Enum status
+    +String idempotencyKey
+  }
+  class UnlockRecord {
+    +UUID id
+    +UUID userId
+    +UUID targetId
+    +UUID paymentOrderId
+    +DateTime unlockedAt
+    +DateTime expiredAt
+  }
+  class Complaint {
+    +UUID id
+    +UUID reporterId
+    +Enum targetType
+    +UUID targetId
+    +Text reason
+    +Enum status
+  }
+  class DataSource {
+    +UUID id
+    +Enum sourceType
+    +String name
+    +Enum credibilityLevel
+    +DateTime lastImportedAt
+  }
+
+  LawFirm "1" o-- "0..*" Lawyer : 所屬事務所
+  Lawyer "1" *-- "0..*" CaseProfile : 案件輪廓
+  Lawyer "1" o-- "0..*" RiskInfo : 公開風險資訊
+  Lawyer "1" o-- "0..*" Review : 會員心得
+  LawFirm "1" o-- "0..*" RiskInfo : 事務所風險資訊
+  User "1" o-- "0..*" Review : 撰寫
+  User "1" o-- "0..*" PaymentOrder : 付款紀錄
+  User "1" o-- "0..*" UnlockRecord : 解鎖紀錄
+  User "1" o-- "0..*" Complaint : 檢舉申訴
+  Complaint "0..*" --> "0..1" Review : report target
+  Complaint "0..*" --> "0..1" RiskInfo : dispute target
+  PaymentOrder "1" -- "0..1" UnlockRecord : 產生解鎖紀錄
+  DataSource "1" o-- "0..*" RiskInfo : 資料來源
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">05_domain_class_diagram.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 05_domain_class_diagram
+title 律師案件圖譜 — Domain Class Diagram
+
+class User { +id +email +displayName +role +membershipStatus }
+class Lawyer { +id +name +barAssociation +licenseNumber +region +lawFirmId }
+class LawFirm { +id +name +region +publicBackground +reputationSummary }
+class CaseProfile { +id +lawyerId +caseType +courtName +judgmentYear +civilCaseOnly }
+class RiskInfo { +id +targetType +targetId +sourceType +credibilityLevel +riskLevel +status }
+class Review { +id +userId +lawyerId +reviewType +content +anonymous +status }
+class PaymentOrder { +id +userId +targetId +amount +provider +status +idempotencyKey }
+class UnlockRecord { +id +userId +targetId +paymentOrderId +unlockedAt +expiredAt }
+class Complaint { +id +reporterId +targetType +targetId +reason +status }
+class DataSource { +id +sourceType +name +credibilityLevel }
+
+LawFirm "1" o-- "0..*" Lawyer
+Lawyer "1" *-- "0..*" CaseProfile
+Lawyer "1" o-- "0..*" RiskInfo
+LawFirm "1" o-- "0..*" RiskInfo
+Lawyer "1" o-- "0..*" Review
+User "1" o-- "0..*" Review
+User "1" o-- "0..*" PaymentOrder
+PaymentOrder "1" -- "0..1" UnlockRecord
+User "1" o-- "0..*" UnlockRecord
+User "1" o-- "0..*" Complaint
+Complaint "0..*" --> "0..1" Review : report target
+Complaint "0..*" --> "0..1" RiskInfo : dispute target
+DataSource "1" o-- "0..*" RiskInfo
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 06 STATE REVIEW -->
+    <section class="diagram-section" id="sm-review">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <div class="section-title-group">
+          <h2>State Machine：Review 會員心得</h2>
+          <span class="section-en">Review State Machine</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 狀態反映需求審核流程（§十一）：通過→Published、拒絕→Rejected、要求修改→NeedRevision。Reported 與 Hidden 對應需求「檢舉機制」與「下架機制」。</p>
+        <p><span class="note-assumed">【合理補充】</span> Draft 狀態為方便存草稿的常見 UGC 設計。Removed 為最終不可逆狀態，與可恢復的 Hidden 區分。</p>
+      </div>
+      <div class="state-flow">
+        <span class="state-pill start">Draft</span><span class="state-arrow">→</span>
+        <span class="state-pill">PendingReview</span><span class="state-arrow">→</span>
+        <span class="state-pill success">Published</span><span class="state-arrow">→</span>
+        <span class="state-pill warn">Reported</span><span class="state-arrow">→</span>
+        <span class="state-pill">Hidden</span><span class="state-arrow">→</span>
+        <span class="state-pill end">Removed</span>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · State</span>
+          <span class="mermaid-wrap-filename">06_review_state_machine</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+stateDiagram-v2
+  [*] --> Draft : 會員開始撰寫
+  Draft --> PendingReview : 提交心得
+  PendingReview --> Published : 管理員審核通過
+  PendingReview --> Rejected : 管理員拒絕
+  PendingReview --> NeedRevision : 要求修改
+  NeedRevision --> PendingReview : 修改後重新提交
+  NeedRevision --> Draft : 儲存草稿
+  Published --> Reported : 使用者檢舉
+  Reported --> Published : 審核後維持上架
+  Reported --> Hidden : 管理員暫時隱藏
+  Reported --> Removed : 管理員直接下架
+  Hidden --> Published : 恢復上架
+  Hidden --> Removed : 永久下架
+  Rejected --> [*]
+  Removed --> [*]
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">06_review_state_machine.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 06_review_state_machine
+title Review 狀態機
+
+[*] --> Draft : 會員開始撰寫
+Draft --> PendingReview : 提交心得
+PendingReview --> Published : 管理員審核通過
+PendingReview --> Rejected : 管理員拒絕
+PendingReview --> NeedRevision : 要求修改
+NeedRevision --> PendingReview : 修改後重新提交
+NeedRevision --> Draft : 儲存草稿
+Published --> Reported : 使用者檢舉
+Reported --> Published : 審核後維持上架
+Reported --> Hidden : 管理員暫時隱藏
+Reported --> Removed : 管理員直接下架
+Hidden --> Published : 恢復上架
+Hidden --> Removed : 永久下架
+Rejected --> [*]
+Removed --> [*]
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 07 STATE PAYMENT -->
+    <section class="diagram-section" id="sm-payment">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <div class="section-title-group">
+          <h2>State Machine：PaymentOrder 付款訂單</h2>
+          <span class="section-en">PaymentOrder State Machine</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 狀態轉移對應 Sequence Diagram 步驟：建立訂單→導向付款→ECPay 回呼→解鎖授予。</p>
+        <p><span class="note-assumed">【合理補充】</span> Failed / Expired 為金流標準設計。RefundRequested→Refunded 為消保法鑑賞期合理預設，建議保留設計空間。</p>
+      </div>
+      <div class="state-flow">
+        <span class="state-pill start">Created</span><span class="state-arrow">→</span>
+        <span class="state-pill">PendingPayment</span><span class="state-arrow">→</span>
+        <span class="state-pill success">Paid</span><span class="state-arrow">→</span>
+        <span class="state-pill success">UnlockGranted</span>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · State</span>
+          <span class="mermaid-wrap-filename">07_payment_state_machine</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+stateDiagram-v2
+  [*] --> Created : 使用者發起付款
+  Created --> PendingPayment : 建立 ECPay 訂單
+  PendingPayment --> Paid : ECPay 回呼付款成功
+  PendingPayment --> Failed : ECPay 回呼付款失敗
+  PendingPayment --> Expired : 逾時未付款（30分鐘）
+  Paid --> UnlockGranted : 建立 UnlockRecord
+  Paid --> RefundRequested : 使用者申請退款
+  RefundRequested --> Refunded : 退款審核通過
+  RefundRequested --> Paid : 退款申請被拒絕
+  UnlockGranted --> RefundRequested : 特殊情況申請退款
+  UnlockGranted --> [*]
+  Failed --> [*]
+  Expired --> [*]
+  Refunded --> [*]
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">07_payment_state_machine.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 07_payment_state_machine
+title PaymentOrder 狀態機
+
+[*] --> Created : 使用者發起付款
+Created --> PendingPayment : 建立 ECPay 訂單
+PendingPayment --> Paid : ECPay 回呼成功
+PendingPayment --> Failed : ECPay 回呼失敗
+PendingPayment --> Expired : 逾時（30 分鐘）
+Paid --> UnlockGranted : 建立 UnlockRecord
+Paid --> RefundRequested : 申請退款
+RefundRequested --> Refunded : 退款核准
+RefundRequested --> Paid : 退款拒絕
+UnlockGranted --> RefundRequested : 特殊情況退款
+UnlockGranted --> [*]
+Failed --> [*]
+Expired --> [*]
+Refunded --> [*]
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 08 STATE RISK INFO -->
+    <section class="diagram-section" id="sm-risk">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <div class="section-title-group">
+          <h2>State Machine：RiskInfo 公開風險資訊</h2>
+          <span class="section-en">RiskInfo State Machine</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 狀態對應需求中「名譽與誹謗風險」法遵重點（§十一）：資訊收集後需驗證才能發布，律師可提出申訴（Disputed），管理員可更正或隱藏。使用中性名稱「公開風險資訊」。</p>
+        <p><span class="note-assumed">【合理補充】</span> Corrected 狀態保留修正前紀錄作為審計軌跡，不直接覆蓋原始資料，為法遵設計慣例。</p>
+      </div>
+      <div class="state-flow">
+        <span class="state-pill start">Collected</span><span class="state-arrow">→</span>
+        <span class="state-pill">PendingVerification</span><span class="state-arrow">→</span>
+        <span class="state-pill">Verified</span><span class="state-arrow">→</span>
+        <span class="state-pill success">Published</span><span class="state-arrow">→</span>
+        <span class="state-pill warn">Disputed</span>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · State</span>
+          <span class="mermaid-wrap-filename">08_risk_info_state_machine</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+stateDiagram-v2
+  [*] --> Collected : 資料匯入（法院/新聞/社群）
+  Collected --> PendingVerification : 送交驗證佇列
+  PendingVerification --> Verified : 管理員確認可信度
+  PendingVerification --> Hidden : 不符發布標準
+  Verified --> Published : 管理員批准發布
+  Published --> Disputed : 律師/事務所提出申訴
+  Published --> Hidden : 管理員主動下架
+  Disputed --> Corrected : 申訴成立，管理員修正
+  Disputed --> Published : 申訴不成立，維持發布
+  Disputed --> Hidden : 申訴期間暫時隱藏
+  Corrected --> Published : 修正後重新發布
+  Corrected --> Hidden : 修正後暫不發布
+  Hidden --> Published : 管理員恢復發布
+  Hidden --> Removed : 永久下架
+  Removed --> [*]
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">08_risk_info_state_machine.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 08_risk_info_state_machine
+title RiskInfo（公開風險資訊）狀態機
+
+[*] --> Collected : 資料匯入
+Collected --> PendingVerification : 送交驗證
+PendingVerification --> Verified : 管理員確認
+PendingVerification --> Hidden : 不符標準
+Verified --> Published : 批准發布
+Published --> Disputed : 律師申訴
+Published --> Hidden : 主動下架
+Disputed --> Corrected : 申訴成立
+Disputed --> Published : 申訴不成立
+Disputed --> Hidden : 暫時隱藏
+Corrected --> Published : 修正後發布
+Corrected --> Hidden : 修正後待審
+Hidden --> Published : 恢復發布
+Hidden --> Removed : 永久下架
+Removed --> [*]
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 09 COMPONENT -->
+    <section class="diagram-section" id="component">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <div class="section-title-group">
+          <h2>Component Diagram</h2>
+          <span class="section-en">系統元件圖</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> 14 個系統元件直接對應需求功能需求分類：搜尋（§7.1）、律師資料頁（§7.2）、風險資訊（§7.3）、事務所（§7.4）、付費機制（§7.5）、會員心得（§7.6）。</p>
+        <p><span class="note-assumed">【合理補充】</span> Search Index（MeiliSearch / Elasticsearch）為支撐複合條件查詢的架構預設。Auth/Member Module 獨立拆分符合安全設計慣例（JWT / OAuth2）。Data Ingestion Module 為後台排程服務。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Component</span>
+          <span class="mermaid-wrap-filename">09_component_diagram</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+flowchart TB
+  PublicWeb["🖥️ Public Web App\n搜尋 / 律師資料 / 付費解鎖"]
+  AdminWeb["🛠️ Admin Web Console\n審核 / 申訴 / 風險資訊管理"]
+
+  subgraph Backend["後端系統 Backend"]
+    API["Backend API\nREST Gateway"]
+    subgraph Modules["核心模組"]
+      Auth["Auth / Member Module\n會員 / 身份驗證"]
+      Search["Lawyer Search Module\n律師搜尋"]
+      Profile["Lawyer Profile Module\n律師資料頁"]
+      Risk["Risk Info Module\n公開風險資訊"]
+      ReviewMod["Review Module\n會員心得"]
+      Payment["Payment Module\n付費解鎖"]
+      AdminMod["Admin Module\n管理後台"]
+      Ingest["Data Ingestion Module\n資料匯入排程"]
+    end
+  end
+
+  subgraph Data["資料層"]
+    DB[("Database\nPostgreSQL")]
+    SearchIdx[("Search Index\nMeiliSearch")]
+  end
+
+  subgraph External["外部系統"]
+    ECPay["🏦 ECPay 綠界金流"]
+    ExtData["🗄️ External Data Sources\n法院判決 / 律師公開資訊\n新聞 / 社群"]
+  end
+
+  PublicWeb -->|HTTPS REST| API
+  AdminWeb -->|HTTPS REST| API
+  AdminWeb -.-> AdminMod
+  API --> Auth & Search & Profile & Risk & ReviewMod & Payment & AdminMod
+  Auth --> DB
+  Search --> SearchIdx
+  Search --> DB
+  Profile --> DB
+  Risk --> DB
+  ReviewMod --> DB
+  Payment --> DB
+  AdminMod --> DB
+  Ingest --> DB
+  Ingest --> SearchIdx
+  Payment <-->|建立訂單 / 驗簽回呼| ECPay
+  ExtData -->|批次匯入| Ingest
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">09_component_diagram.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 09_component_diagram
+title 律師案件圖譜 — Component Diagram (MVP)
+
+package "外部系統" {
+  [ECPay 綠界金流] as ECPay
+  [外部資料來源\n法院判決/律師資訊/新聞/社群] as ExtData
+}
+package "前端" {
+  [Public Web App\n搜尋/律師資料/付費解鎖] as PublicWeb
+  [Admin Web Console\n審核/申訴/風險資訊管理] as AdminWeb
+}
+package "後端" {
+  [Backend API] as API
+  [Auth / Member Module] as Auth
+  [Lawyer Search Module] as Search
+  [Lawyer Profile Module] as Profile
+  [Risk Info Module] as Risk
+  [Review Module] as ReviewMod
+  [Payment Module] as Payment
+  [Admin Module] as Admin
+  [Data Ingestion Module] as Ingest
+}
+package "資料層" {
+  database "Database (PostgreSQL)" as DB
+  database "Search Index (MeiliSearch)" as SearchIdx
+}
+
+PublicWeb --> API
+AdminWeb --> API
+AdminWeb ..> Admin : admin ops
+API --> Auth
+API --> Search
+API --> Profile
+API --> Risk
+API --> ReviewMod
+API --> Payment
+API --> Admin
+Auth --> DB
+Search --> SearchIdx
+Search --> DB
+Profile --> DB
+Risk --> DB
+ReviewMod --> DB
+Payment --> DB
+Admin --> DB
+Ingest --> DB
+Ingest --> SearchIdx
+Payment --> ECPay
+ECPay --> API : Webhook
+ExtData --> Ingest
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 10 ACTIVITY INGESTION -->
+    <section class="diagram-section" id="act-ingestion">
+      <div class="section-header">
+        <span class="section-num">10</span>
+        <div class="section-title-group">
+          <h2>Activity Diagram：資料匯入流程</h2>
+          <span class="section-en">Data Ingestion Activity</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 設計說明</div>
+        <p><span class="note-derived">【需求推導】</span> MVP 的主要骨幹是法院判決資料，其他資料來源包含律師公開資訊、新聞、社群資料與會員產出內容。資料匯入流程需支援來源可信度標記與搜尋索引更新。</p>
+        <p><span class="note-assumed">【合理補充】</span> 資料解析、去重、建立 CaseProfile、更新 SearchIndex 是資料整理型平台的必要工程流程。實際資料來源 API 或爬取方式尚未定案，因此本圖只描述平台內部處理流程。</p>
+      </div>
+      <div class="mermaid-wrap">
+        <div class="mermaid-wrap-header">
+          <span class="mermaid-wrap-label">Mermaid · Activity</span>
+          <span class="mermaid-wrap-filename">10_data_ingestion_activity</span>
+        </div>
+        <div class="mermaid-body">
+          <div class="mermaid">
+flowchart TD
+  A([開始]) --> B["排程或管理員觸發資料匯入"]
+  B --> C["選擇資料來源\n法院判決 / 律師公開資訊 / 新聞 / 社群"]
+  C --> D["取得原始資料"]
+  D --> E{資料格式是否有效?}
+  E -- 否 --> F["記錄匯入錯誤\n標記為 Failed"] --> Z1([結束])
+  E -- 是 --> G["解析資料內容\n抽取律師、事務所、案件類型、法院、年份"]
+  G --> H["資料清洗與去重"]
+  H --> I["建立或更新 Lawyer / LawFirm"]
+  I --> J["建立或更新 CaseProfile / RiskInfo"]
+  J --> K["標記 DataSource 與 CredibilityLevel"]
+  K --> L["更新 Search Index"]
+  L --> M["記錄匯入批次結果"]
+  M --> Z2([結束])
+          </div>
+        </div>
+      </div>
+      <div class="code-toggle" onclick="toggleCode(this)">
+        <span class="toggle-arrow">▶</span> 查看 PlantUML 原始碼
+      </div>
+      <div class="code-wrap">
+        <div class="code-header">
+          <span class="code-lang">PlantUML</span>
+          <span class="code-filename">10_data_ingestion_activity.puml</span>
+          <button class="copy-btn" onclick="copyCode(this)">複製</button>
+        </div>
+        <div class="code-body"><pre>@startuml 10_data_ingestion_activity
+title 資料匯入流程 — Activity Diagram
+
+start
+:排程或管理員觸發資料匯入;
+:選擇資料來源\n（法院判決 / 律師公開資訊 / 新聞 / 社群）;
+:取得原始資料;
+if (資料格式是否有效？) then (否)
+  :記錄匯入錯誤\n標記為 Failed;
+  stop
+else (是)
+  :解析資料內容\n抽取律師、事務所、案件類型、法院、年份;
+  :資料清洗與去重;
+  :建立或更新 Lawyer / LawFirm;
+  :建立或更新 CaseProfile / RiskInfo;
+  :標記 DataSource 與 CredibilityLevel;
+  :更新 Search Index;
+  :記錄匯入批次結果;
+  stop
+endif
+@enduml</pre></div>
+      </div>
+    </section>
+
+    <!-- 11 ACCESS CONTROL -->
+    <section class="diagram-section" id="access-control">
+      <div class="section-header">
+        <span class="section-num">11</span>
+        <div class="section-title-group">
+          <h2>權限矩陣</h2>
+          <span class="section-en">Access Control Matrix</span>
+        </div>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>功能</th><th style="text-align:right;">Guest</th><th style="text-align:right;">Member</th><th style="text-align:right;">UnlockedMember</th><th style="text-align:right;">Admin</th><th style="text-align:right;">LawyerRep</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>搜尋律師</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td></tr>
+          <tr><td>查看免費摘要</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td></tr>
+          <tr><td>查看完整案件資訊</td><td style="text-align:right;">❌</td><td style="text-align:right;">需解鎖</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">視權限</td></tr>
+          <tr><td>查看會員心得</td><td style="text-align:right;">❌</td><td style="text-align:right;">需解鎖</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>投稿會員心得</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>檢舉心得</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>審核心得</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>管理風險資訊</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>提出申訴 / 更正</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">✅</td></tr>
+          <tr><td>處理申訴 / 更正</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+          <tr><td>匯入資料</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">❌</td><td style="text-align:right;">✅</td><td style="text-align:right;">❌</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">🔐 補充說明</div>
+        <p>此矩陣為 MVP 權限基準，實際實作時可對應 RBAC 或 Policy-based Authorization。UnlockedMember 不代表全站付費會員，而是已解鎖特定內容的會員狀態。</p>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<button id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到頂部">↑</button>
+
+<script>
+  // Mermaid init with dark theme
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#0a0e1a',
+      mainBkg: '#141929',
+      nodeBorder: '#344060',
+      clusterBkg: '#0f1524',
+      titleColor: '#e8edf8',
+      edgeLabelBackground: '#1a2035',
+      primaryColor: '#1a2035',
+      primaryTextColor: '#e8edf8',
+      primaryBorderColor: '#344060',
+      lineColor: '#4a7090',
+      secondaryColor: '#0f1524',
+      tertiaryColor: '#141929',
+      fontFamily: 'Noto Sans TC, sans-serif',
+      fontSize: '13px',
+      // sequence
+      actorBkg: '#1a2035',
+      actorBorder: '#344060',
+      actorTextColor: '#e8edf8',
+      actorLineColor: '#4a7090',
+      signalColor: '#a8b4cc',
+      signalTextColor: '#e8edf8',
+      labelBoxBkgColor: '#0f1524',
+      labelBoxBorderColor: '#344060',
+      labelTextColor: '#a8b4cc',
+      loopTextColor: '#a8b4cc',
+      noteBorderColor: '#344060',
+      noteBkgColor: '#1a2035',
+      noteTextColor: '#a8b4cc',
+      activationBorderColor: '#4a7090',
+      activationBkgColor: '#1f2740',
+      // class
+      classText: '#e8edf8',
+      // state
+      fillType0: '#1a2035',
+      fillType1: '#141929',
+    },
+    flowchart: { curve: 'basis', padding: 20 },
+    sequence: { mirrorActors: false, bottomMarginAdj: 10, useMaxWidth: true },
+    classDiagram: { useMaxWidth: true },
+    stateDiagram: { useMaxWidth: true },
+  });
+
+  // Scroll spy
+  const sections = document.querySelectorAll('.diagram-section');
+  const navItems = document.querySelectorAll('.nav-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Scroll top
+  const scrollTopBtn = document.getElementById('scrolltop');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  // Copy
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = '已複製 ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // Toggle code
+  function toggleCode(btn) {
+    btn.classList.toggle('open');
+    const wrap = btn.nextElementSibling;
+    wrap.classList.toggle('open');
+  }
+
+  // Mermaid fullscreen toggle
+  function syncMermaidFullscreenButtons() {
+    const active = document.fullscreenElement;
+    document.querySelectorAll('.mermaid-fullscreen-btn').forEach(btn => {
+      const inFullscreen = btn.closest('.mermaid-wrap') === active;
+      btn.textContent = inFullscreen ? '離開全螢幕' : '全螢幕';
+    });
+  }
+
+  function initMermaidFullscreenButtons() {
+    document.querySelectorAll('.mermaid-wrap').forEach((wrap) => {
+      const header = wrap.querySelector('.mermaid-wrap-header');
+      const filename = wrap.querySelector('.mermaid-wrap-filename');
+      if (!header || !filename || header.querySelector('.mermaid-fullscreen-btn')) return;
+
+      const tools = document.createElement('div');
+      tools.className = 'mermaid-wrap-tools';
+      filename.parentNode.insertBefore(tools, filename);
+      tools.appendChild(filename);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mermaid-fullscreen-btn';
+      btn.textContent = '全螢幕';
+      btn.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement === wrap) {
+            await document.exitFullscreen();
+          } else {
+            await wrap.requestFullscreen();
+          }
+        } catch (err) {
+          console.error('Fullscreen toggle failed:', err);
+        }
+      });
+      tools.appendChild(btn);
+
+      const body = wrap.querySelector('.mermaid-body');
+      if (!body) return;
+
+      const zoomTools = document.createElement('div');
+      zoomTools.className = 'mermaid-zoom-tools';
+
+      const zoomOutBtn = document.createElement('button');
+      zoomOutBtn.type = 'button';
+      zoomOutBtn.className = 'mermaid-zoom-btn';
+      zoomOutBtn.textContent = '-';
+
+      const zoomLevel = document.createElement('span');
+      zoomLevel.className = 'mermaid-zoom-level';
+      zoomLevel.textContent = '100%';
+
+      const zoomInBtn = document.createElement('button');
+      zoomInBtn.type = 'button';
+      zoomInBtn.className = 'mermaid-zoom-btn';
+      zoomInBtn.textContent = '+';
+
+      const zoomResetBtn = document.createElement('button');
+      zoomResetBtn.type = 'button';
+      zoomResetBtn.className = 'mermaid-zoom-btn';
+      zoomResetBtn.textContent = '1:1';
+
+      let zoom = 1;
+      const minZoom = 0.5;
+      const maxZoom = 4;
+      const step = 0.05;
+      let targetSvg = null;
+      const resolveSvg = (attempt = 0) => {
+        targetSvg = body.querySelector('svg');
+        if (targetSvg || attempt > 120) return;
+        requestAnimationFrame(() => resolveSvg(attempt + 1));
+      };
+      resolveSvg();
+      const applyZoom = () => {
+        if (!targetSvg) {
+          resolveSvg();
+          zoomLevel.textContent = Math.round(zoom * 100) + '%';
+          return;
+        }
+        // 定義：100% = 自動貼齊容器（可讀、直覺）；其他倍率用固定寬度縮放並可拖曳/捲動閱讀
+        const z = Math.round(zoom * 100) / 100;
+        if (z === 1) {
+          targetSvg.style.width = '';
+          targetSvg.style.height = '';
+          targetSvg.style.maxWidth = '100%';
+        } else {
+          const fitWidth = Math.max(320, body.clientWidth || 0);
+          targetSvg.style.maxWidth = 'none';
+          targetSvg.style.width = Math.round(fitWidth * z) + 'px';
+          targetSvg.style.height = 'auto';
+        }
+        zoomLevel.textContent = Math.round(zoom * 100) + '%';
+      };
+
+      zoomOutBtn.addEventListener('click', () => {
+        zoom = Math.max(minZoom, +(zoom - step).toFixed(2));
+        applyZoom();
+      });
+      zoomInBtn.addEventListener('click', () => {
+        zoom = Math.min(maxZoom, +(zoom + step).toFixed(2));
+        applyZoom();
+      });
+      zoomResetBtn.addEventListener('click', () => {
+        zoom = 1;
+        applyZoom();
+      });
+
+      zoomTools.appendChild(zoomOutBtn);
+      zoomTools.appendChild(zoomLevel);
+      zoomTools.appendChild(zoomInBtn);
+      zoomTools.appendChild(zoomResetBtn);
+      tools.insertBefore(zoomTools, btn);
+      applyZoom();
+    });
+    syncMermaidFullscreenButtons();
+  }
+
+  document.addEventListener('fullscreenchange', syncMermaidFullscreenButtons);
+  initMermaidFullscreenButtons();
+
+  // Drag-to-pan for Mermaid diagrams (scroll container)
+  function initMermaidDragPan() {
+    document.querySelectorAll('.mermaid-body').forEach((body) => {
+      if (body.dataset.dragpan === '1') return;
+      body.dataset.dragpan = '1';
+
+      let isDown = false;
+      let startX = 0;
+      let startY = 0;
+      let startScrollLeft = 0;
+      let startScrollTop = 0;
+      let pointerId = null;
+
+      const isInteractiveEl = (el) => {
+        if (!el) return false;
+        return !!el.closest('button,a,input,textarea,select,label,.mermaid-wrap-header');
+      };
+
+      body.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0) return; // left click only
+        if (isInteractiveEl(e.target)) return;
+        // Only enable when there's something to pan
+        if (body.scrollWidth <= body.clientWidth && body.scrollHeight <= body.clientHeight) return;
+
+        isDown = true;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        startScrollLeft = body.scrollLeft;
+        startScrollTop = body.scrollTop;
+        body.classList.add('dragging');
+
+        try { body.setPointerCapture(pointerId); } catch (_) {}
+        e.preventDefault();
+      }, { passive: false });
+
+      body.addEventListener('pointermove', (e) => {
+        if (!isDown) return;
+        if (pointerId !== null && e.pointerId !== pointerId) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        body.scrollLeft = startScrollLeft - dx;
+        body.scrollTop = startScrollTop - dy;
+        e.preventDefault();
+      }, { passive: false });
+
+      const end = () => {
+        isDown = false;
+        pointerId = null;
+        body.classList.remove('dragging');
+      };
+
+      body.addEventListener('pointerup', end);
+      body.addEventListener('pointercancel', end);
+      body.addEventListener('pointerleave', end);
+    });
+  }
+
+  initMermaidDragPan();
+
+  // Entry animation
+  const animObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        animObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.04 });
+  sections.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    animObs.observe(el);
+  });
+</script>
+</body>
+</html>
