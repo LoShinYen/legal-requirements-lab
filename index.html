@@ -9,25 +9,55 @@
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <style>
   :root {
+    /* DARK THEME (default — for desktop / screen viewing) */
     --bg: #0a0e1a;
     --bg2: #0f1524;
     --bg3: #141929;
     --surface: #1a2035;
     --surface2: #1f2740;
-    --border: #2a3350;
-    --border2: #344060;
+    --border: #3a4768;        /* bumped for projector readability */
+    --border2: #4a587a;
     --fg: #eef2fb;
     --fg2: #c0cbe1;
-    --fg3: #7a89aa;
+    --fg3: #8a99ba;
     --accent: oklch(65% 0.15 205);
     --accent2: oklch(72% 0.14 158);
     --accent3: oklch(68% 0.13 260);
-    --accent-dim: oklch(65% 0.15 205 / 0.15);
-    --accent2-dim: oklch(72% 0.14 158 / 0.12);
+    --accent-dim: oklch(65% 0.15 205 / 0.18);
+    --accent2-dim: oklch(72% 0.14 158 / 0.14);
     --warn: oklch(72% 0.18 55);
     --code-bg: #060a12;
+    --fullscreen-bg: #060a12;
+    --hero-gradient-end: #0d1530;                  /* hero 漸層深角 */
+    --card-elevated-bg: rgba(20, 25, 41, 0.6);     /* report-meta、presentation-note 等 elevated 卡片底色 */
+    --presentation-note-bg: linear-gradient(135deg, rgba(56, 130, 184, 0.08), rgba(20, 25, 41, 0.55));
     --radius: 8px;
     --sidebar-w: 280px;
+  }
+
+  /* LIGHT THEME — academic / projector friendly (slate palette) */
+  [data-theme="light"] {
+    --bg: #f6f7f9;                       /* 略帶冷調米白，比純白柔和 */
+    --bg2: #ffffff;
+    --bg3: #eef2f7;
+    --surface: #ffffff;
+    --surface2: #e8eef5;
+    --border: #d4dbe5;                   /* 柔和但夠清楚 */
+    --border2: #9ba6b8;
+    --fg: #1a2030;                       /* 不要全黑 */
+    --fg2: #3d4a63;
+    --fg3: #6b7689;
+    --accent: oklch(48% 0.11 230);       /* 學院藍：較低彩度，不刺眼 */
+    --accent2: oklch(52% 0.10 175);      /* 沉穩青綠 */
+    --accent3: oklch(50% 0.10 285);      /* 灰紫 */
+    --accent-dim: oklch(48% 0.11 230 / 0.08);
+    --accent2-dim: oklch(52% 0.10 175 / 0.08);
+    --warn: oklch(58% 0.16 38);          /* 暖橙 */
+    --code-bg: #1a2035;
+    --fullscreen-bg: #ffffff;
+    --hero-gradient-end: #e8eef5;        /* 漸層收在淺灰，不要黑塊 */
+    --card-elevated-bg: rgba(255, 255, 255, 0.7);
+    --presentation-note-bg: linear-gradient(135deg, rgba(72, 110, 168, 0.06), rgba(232, 238, 245, 0.6));
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,7 +211,7 @@
 
   /* HERO */
   .hero {
-    background: linear-gradient(135deg, var(--bg) 0%, var(--bg3) 50%, #0d1530 100%);
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg3) 50%, var(--hero-gradient-end) 100%);
     border-bottom: 1px solid var(--border);
     padding: 64px 72px 56px;
     position: relative;
@@ -191,13 +221,14 @@
     content: '';
     position: absolute; top: -80px; right: -80px;
     width: 400px; height: 400px;
-    background: radial-gradient(circle, oklch(65% 0.15 205 / 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, color-mix(in oklab, var(--accent) 40%, transparent) 0%, transparent 70%);
+    opacity: 0.2;
     pointer-events: none;
   }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--accent-dim);
-    border: 1px solid oklch(65% 0.15 205 / 0.3);
+    border: 1px solid color-mix(in oklab, var(--accent) 50%, transparent);
     border-radius: 20px; padding: 4px 14px 4px 10px;
     font-size: 12px; font-family: 'JetBrains Mono', monospace;
     color: var(--accent); margin-bottom: 20px;
@@ -339,7 +370,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--fg3);
-    background: rgba(10, 14, 26, 0.75);
+    background: color-mix(in oklab, var(--bg) 80%, transparent);
     border: 1px solid var(--border);
     border-radius: 999px;
     padding: 4px 10px;
@@ -354,24 +385,24 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #060a12;
+    background: var(--fullscreen-bg);
   }
   .mermaid-wrap:fullscreen .mermaid-wrap-header {
     position: sticky;
     top: 0;
     z-index: 5;
     min-height: 56px;
-    background: rgba(15, 21, 36, 0.96);
+    background: color-mix(in oklab, var(--bg2) 92%, transparent);
     backdrop-filter: blur(10px);
   }
   .mermaid-wrap:fullscreen .mermaid-body {
     flex: 1;
     min-height: 0;
     height: calc(100vh - 64px);
-    padding: 32px;
-    align-items: center;
-    justify-content: center;
     overflow: auto;
+  }
+  .mermaid-wrap:fullscreen .mermaid-body > .mermaid {
+    padding: 32px;
   }
   .mermaid-wrap:fullscreen .mermaid-body svg {
     max-width: none;
@@ -379,8 +410,8 @@
   }
   .mermaid-body {
     position: relative;
-    padding: 32px 24px;
-    display: flex; justify-content: center; align-items: center;
+    display: flex;
+    flex-direction: column;
     overflow: auto;
     min-height: 320px;
     cursor: grab;
@@ -389,6 +420,18 @@
     overscroll-behavior: contain;
   }
   .mermaid-body.dragging { cursor: grabbing; }
+  /* .mermaid 是 body 內唯一 flex item：flex:1 0 auto 讓它「至少」撐滿 body，
+     但內容超出時可以再長大撐出 scroll；置中行為發生在這層，所以 SVG 太大時
+     不會被 justify-content:center 擠進負空間導致無法 scroll/拖曳到邊緣。 */
+  .mermaid-body > .mermaid {
+    flex: 1 0 auto;
+    min-width: 100%;
+    padding: 32px 24px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .mermaid-body svg {
     max-width: none;
     height: auto;
@@ -433,6 +476,31 @@
     padding: 20px 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
     line-height: 1.7; color: #c9d5ef; white-space: pre; tab-size: 2;
   }
+  /* code body 一律保持深色，在淺色主題也照看 */
+  [data-theme="light"] .code-wrap,
+  [data-theme="light"] .code-header {
+    background: #0f1524;
+    border-color: #2a3350;
+  }
+  [data-theme="light"] .code-lang { color: oklch(72% 0.14 200); }
+  [data-theme="light"] .code-filename { color: #8a99ba; }
+  [data-theme="light"] .copy-btn { color: #8a99ba; border-color: #4a587a; }
+  [data-theme="light"] .copy-btn:hover { color: #eef2fb; border-color: #8a99ba; }
+
+  /* Mermaid SVG 節點 hover 視線引導 — 報告者指到誰，觀眾就看到誰 */
+  .mermaid svg .node:hover > rect,
+  .mermaid svg .node:hover > polygon,
+  .mermaid svg .node:hover > circle,
+  .mermaid svg .node:hover > ellipse,
+  .mermaid svg g[id^="flowchart-"]:hover > rect {
+    filter: drop-shadow(0 0 4px var(--accent));
+    transition: filter 0.15s ease;
+    cursor: pointer;
+  }
+  .mermaid svg .actor:hover {
+    filter: drop-shadow(0 0 4px var(--accent2));
+    cursor: pointer;
+  }
 
   /* TAGS & TABLES */
   .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
@@ -447,6 +515,109 @@
   }
   .overview-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--fg2); vertical-align: top; }
   .overview-table tr:hover td { background: var(--surface); }
+
+  /* REQ code styling */
+  .req-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  /* Use Case Description tables — follows textbook template */
+  .uc-desc {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    margin: 16px 0;
+    overflow: hidden;
+  }
+  .uc-desc-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .uc-desc-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 3px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .uc-desc-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fg);
+  }
+  .uc-desc-name-en {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--fg3);
+    margin-left: auto;
+  }
+  .uc-desc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .uc-desc-table th {
+    text-align: left;
+    padding: 9px 16px;
+    background: var(--bg3);
+    color: var(--fg2);
+    font-weight: 500;
+    width: 140px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .uc-desc-table td {
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg);
+    vertical-align: top;
+  }
+  .uc-desc-table tr:last-child th,
+  .uc-desc-table tr:last-child td {
+    border-bottom: none;
+  }
+  .uc-desc-table ol,
+  .uc-desc-table ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .uc-desc-table .step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 10px;
+    padding: 3px 0;
+    align-items: baseline;
+  }
+  .uc-desc-table .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  .uc-desc-table .step-text { color: var(--fg2); line-height: 1.65; }
+  .uc-desc-table .step-include {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+  }
+  .uc-desc-empty { color: var(--fg3); font-style: italic; }
 
   .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 12px; margin: 20px 0; }
   .actor-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
@@ -479,7 +650,8 @@
     gap: 10px 18px;
     margin-top: 28px;
     padding: 16px 20px;
-    background: rgba(20, 25, 41, 0.6);
+    background: var(--card-elevated-bg);
+    backdrop-filter: blur(4px);
     border: 1px solid var(--border);
     border-left: 3px solid var(--accent);
     border-radius: var(--radius);
@@ -619,7 +791,7 @@
 
   /* presentation-note: 給報告者的「本頁重點」標示 */
   .presentation-note {
-    background: linear-gradient(135deg, rgba(56, 130, 184, 0.08), rgba(20, 25, 41, 0.55));
+    background: var(--presentation-note-bg);
     border: 1px solid var(--border2);
     border-left: 4px solid var(--accent);
     border-radius: var(--radius);
@@ -730,20 +902,59 @@
       top: 0;
       width: 100%;
       min-width: 0;
-      max-height: 42vh;
+      max-height: min(52vh, 440px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
       border-right: none;
       border-bottom: 1px solid var(--border);
+      z-index: 100;
     }
-    .sidebar-header { padding: 18px 16px 14px; }
+    body.sidebar-mobile-collapsed #sidebar {
+      max-height: none;
+      overflow: visible;
+    }
+    body.sidebar-mobile-collapsed .sidebar-nav,
+    body.sidebar-mobile-collapsed .sidebar-footer {
+      display: none !important;
+    }
+    body.sidebar-mobile-collapsed .sidebar-header {
+      border-bottom: none;
+      padding-bottom: 16px;
+    }
+    .sidebar-header {
+      padding: 18px 52px 14px 16px;
+      flex-shrink: 0;
+    }
     .sidebar-nav {
       padding: 8px 0 12px;
       display: grid;
       grid-template-columns: 1fr 1fr;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .nav-section-label { grid-column: 1 / -1; padding: 10px 16px 6px; }
     .nav-item { padding: 8px 16px; }
-    .sidebar-footer { padding: 10px 16px; }
-    .sidebar-toggle-btn { display: none; }
+    .sidebar-footer {
+      padding: 10px 16px;
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-toggle-btn {
+      display: inline-flex;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      font-size: 15px;
+      z-index: 2;
+    }
+    .sidebar-toggle-btn:hover {
+      transform: translateY(calc(-50% - 1px));
+    }
 
     #main { margin-left: 0; }
     .hero { padding: 34px 20px 28px; }
@@ -871,8 +1082,11 @@
     <a class="nav-item" href="#system-boundary"><span class="nav-num">00-6</span> MVP 系統邊界</a>
     <a class="nav-item" href="#data-credibility"><span class="nav-num">00-7</span> 資料來源可信度分層</a>
     <a class="nav-item" href="#risk-control"><span class="nav-num">00-8</span> 法遵與名譽風險控制</a>
+    <a class="nav-item" href="#requirements"><span class="nav-num">00-9</span> 需求清單</a>
+    <a class="nav-item" href="#event-table"><span class="nav-num">00-A</span> 事件表</a>
     <div class="nav-section-label" style="margin-top:8px;">核心 UML</div>
     <a class="nav-item" href="#uc"><span class="nav-num">01</span> Use Case Diagram</a>
+    <a class="nav-item" href="#uc-desc"><span class="nav-num">01-A</span> Use Case Description</a>
     <a class="nav-item" href="#act-search"><span class="nav-num">02</span> 搜尋律師 Activity</a>
     <a class="nav-item" href="#seq-pay"><span class="nav-num">03</span> 付費解鎖 Sequence</a>
     <a class="nav-item" href="#act-review"><span class="nav-num">04</span> 心得審核 Activity</a>
@@ -925,7 +1139,10 @@
       </div>
     </div>
     <div class="hero-actions">
-      <button id="presentationToggle" class="hero-btn" type="button" aria-pressed="false" title="切換展示模式">
+      <button id="themeToggle" class="hero-btn" type="button" aria-pressed="false" title="切換深色 / 淺色主題（投影建議淺色）">
+        <span class="hero-btn-dot"></span><span class="hero-btn-label">淺色主題</span>
+      </button>
+      <button id="presentationToggle" class="hero-btn" type="button" aria-pressed="false" title="切換展示模式（放大字體與圖表）">
         <span class="hero-btn-dot"></span><span class="hero-btn-label">展示模式</span>
       </button>
       <a class="hero-btn" href="#presentation-roadmap">
@@ -1292,6 +1509,84 @@
       </div>
     </section>
 
+    <!-- 00-9 REQUIREMENT LIST -->
+    <section class="diagram-section" id="requirements">
+      <div class="section-header">
+        <span class="section-num">00-9</span>
+        <div class="section-title-group">
+          <h2>需求清單</h2>
+          <span class="section-en">Requirement List</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📋 編號規則</div>
+        <p>需求依領域分前綴：<span class="req-code">REQ-S</span> 搜尋瀏覽、<span class="req-code">REQ-M</span> 會員授權、<span class="req-code">REQ-P</span> 付費機制、<span class="req-code">REQ-R</span> 會員心得、<span class="req-code">REQ-A</span> 管理後台、<span class="req-code">REQ-D</span> 資料匯入。每筆需求對應一至多個使用案例，並於使用案例描述中回引此編號。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th style="width:110px;">需求編號</th><th>需求說明</th><th style="width:120px;">對應 UC</th><th style="width:90px;">來源</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="req-code">REQ-S001</span></td><td>作為訪客或會員，我希望能以複合條件（姓名、案件類型、地區、事務所、爭議、聲量、經驗）搜尋律師，以便快速取得候選名單。</td><td>UC1</td><td><span class="tag tag-derived">§7.1</span></td></tr>
+          <tr><td><span class="req-code">REQ-S002</span></td><td>作為訪客或會員，我希望能查看搜尋結果候選名單與免費摘要，以便比較候選律師。</td><td>UC2</td><td><span class="tag tag-derived">§7.1</span></td></tr>
+          <tr><td><span class="req-code">REQ-S003</span></td><td>作為訪客或會員，我希望能查看律師免費資料頁（姓名、背景、案件輪廓、基礎風險、所屬事務所），以便初步判斷適配度。</td><td>UC3</td><td><span class="tag tag-derived">§7.2</span></td></tr>
+          <tr><td><span class="req-code">REQ-S004</span></td><td>作為訪客或會員，我希望能查看律師所屬事務所資訊與公開風評，以便評估組織背景。</td><td>UC4</td><td><span class="tag tag-derived">§7.4</span></td></tr>
+          <tr><td><span class="req-code">REQ-S005</span></td><td>作為訪客或會員，我希望能查看律師的公開風險摘要（誠信風險觀測），以便辨識可能的爭議訊號。</td><td>UC5</td><td><span class="tag tag-derived">§7.3</span></td></tr>
+          <tr><td><span class="req-code">REQ-M001</span></td><td>作為訪客，我希望能透過註冊或登入成為會員，以便使用付費解鎖、投稿心得等功能。</td><td>UC6</td><td><span class="tag tag-derived">§7.5</span></td></tr>
+          <tr><td><span class="req-code">REQ-P001</span></td><td>作為會員，我希望能透過綠界金流發起付費解鎖，以便取得完整資訊與會員心得的存取權。</td><td>UC7（include UC17, UC18）</td><td><span class="tag tag-derived">§7.5</span></td></tr>
+          <tr><td><span class="req-code">REQ-P002</span></td><td>作為已解鎖會員，我希望能查看完整付費內容（完整案件、風險整理、會員心得），以便取得決策資訊。</td><td>UC8</td><td><span class="tag tag-derived">§7.5</span></td></tr>
+          <tr><td><span class="req-code">REQ-R001</span></td><td>作為會員，我希望能投稿律師心得（接觸、諮詢、委任經驗），以便分享經驗並為平台累積差異化內容。</td><td>UC9</td><td><span class="tag tag-derived">§7.6</span></td></tr>
+          <tr><td><span class="req-code">REQ-R002</span></td><td>作為會員，我希望能檢舉不當的會員心得，以便維護內容品質。</td><td>UC10</td><td><span class="tag tag-derived">§十一</span></td></tr>
+          <tr><td><span class="req-code">REQ-R003</span></td><td>作為管理員，我希望能審核會員心得（通過、要求修改、拒絕），以便降低不實評論與名譽風險。</td><td>UC11</td><td><span class="tag tag-derived">§十一</span></td></tr>
+          <tr><td><span class="req-code">REQ-A001</span></td><td>作為管理員，我希望能管理公開風險資訊（建立、驗證、發布、修正、隱藏、下架），以便維持資料的可信度與法遵。</td><td>UC12</td><td><span class="tag tag-derived">§7.3、§十一</span></td></tr>
+          <tr><td><span class="req-code">REQ-A002</span></td><td>作為管理員或律師代表，我希望能對平台內容提出申訴或更正請求並追蹤處理結果，以便處理名譽爭議。</td><td>UC13</td><td><span class="tag tag-derived">§十一</span></td></tr>
+          <tr><td><span class="req-code">REQ-D001</span></td><td>作為管理員，我希望系統能匯入法院判決公開資料，以便建立 MVP 主要骨幹資料。</td><td>UC14</td><td><span class="tag tag-derived">§十</span></td></tr>
+          <tr><td><span class="req-code">REQ-D002</span></td><td>作為管理員，我希望系統能匯入律師公開資訊（律師公會、政府公開資料），以便擴充律師基本資料。</td><td>UC15</td><td><span class="tag tag-derived">§十</span></td></tr>
+          <tr><td><span class="req-code">REQ-D003</span></td><td>作為管理員，我希望系統能匯入新聞與社群資料，並依可信度分層標記，以便支援風險摘要。</td><td>UC16</td><td><span class="tag tag-derived">§十、§十二</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 00-A EVENT TABLE -->
+    <section class="diagram-section" id="event-table">
+      <div class="section-header">
+        <span class="section-num">00-A</span>
+        <div class="section-title-group">
+          <h2>事件表</h2>
+          <span class="section-en">Event Table</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 撰寫原則</div>
+        <p>事件表為使用案例的上游推導工具，從系統外部觀點記錄「什麼事件觸發系統執行什麼活動」。每一列以「主詞 + 動詞 + (受詞)」描述事件名稱，並標示觸發點、來源、活動、回應與目的地（參照課程教材《需求收集與分析》§事件表）。</p>
+      </div>
+      <table class="overview-table">
+        <thead>
+          <tr><th>事件名稱</th><th>觸發點</th><th>來源</th><th>活動</th><th>回應</th><th>目的地</th><th>對應 UC</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>使用者搜尋律師</td><td>搜尋請求</td><td>訪客 / 會員</td><td>查詢律師、案件、事務所、風險</td><td>候選律師名單</td><td>使用者前端</td><td>UC1, UC2</td></tr>
+          <tr><td>使用者查看律師頁</td><td>點擊律師</td><td>訪客 / 會員</td><td>讀取律師、案件輪廓、事務所、風險摘要</td><td>律師免費資料頁</td><td>使用者前端</td><td>UC3, UC4, UC5</td></tr>
+          <tr><td>使用者註冊登入</td><td>提交帳號 / 密碼</td><td>訪客</td><td>建立會員帳號或驗證身份</td><td>登入態 / 會員資料</td><td>使用者前端</td><td>UC6</td></tr>
+          <tr><td>會員發起付費解鎖</td><td>點擊「解鎖完整資訊」</td><td>會員</td><td>檢查解鎖狀態、建立 PaymentOrder、導向綠界</td><td>付款連結</td><td>使用者前端</td><td>UC7, UC17</td></tr>
+          <tr><td>綠界回呼付款結果</td><td>付款完成 Webhook</td><td>ECPay</td><td>驗證 checkMacValue、更新訂單、建立 UnlockRecord</td><td>付款結果 / 解鎖內容</td><td>後端 / 使用者前端</td><td>UC18</td></tr>
+          <tr><td>已解鎖會員查看完整內容</td><td>讀取付費頁</td><td>已解鎖會員</td><td>檢查 UnlockRecord、回傳完整資訊</td><td>完整案件、風險、心得</td><td>使用者前端</td><td>UC8</td></tr>
+          <tr><td>會員投稿心得</td><td>提交心得表單</td><td>會員</td><td>規則檢查、建立 Review（PendingReview）</td><td>待審通知</td><td>管理後台</td><td>UC9</td></tr>
+          <tr><td>會員檢舉心得</td><td>點擊「檢舉」</td><td>會員</td><td>建立 Complaint、變更 Review 狀態為 Reported</td><td>檢舉受理結果</td><td>使用者前端 / 管理後台</td><td>UC10</td></tr>
+          <tr><td>管理員審核心得</td><td>審核動作（通過 / 拒絕 / 要求修改）</td><td>管理員</td><td>更新 Review 狀態</td><td>審核結果通知</td><td>會員 / 系統</td><td>UC11</td></tr>
+          <tr><td>管理員管理風險資訊</td><td>建立 / 驗證 / 發布 / 修正風險</td><td>管理員</td><td>更新 RiskInfo 狀態與內容</td><td>風險資訊變更</td><td>系統</td><td>UC12</td></tr>
+          <tr><td>律師或事務所提出申訴</td><td>提交申訴表單</td><td>律師代表</td><td>建立 Complaint、變更目標狀態為 Disputed</td><td>申訴受理結果</td><td>管理後台</td><td>UC13</td></tr>
+          <tr><td>排程匯入法院判決資料</td><td>排程時間到</td><td>Timer / 管理員</td><td>解析、去重、建立 CaseProfile、更新索引</td><td>匯入批次結果</td><td>系統</td><td>UC14</td></tr>
+          <tr><td>排程匯入律師公開資訊</td><td>排程時間到</td><td>Timer / 管理員</td><td>解析、建立 Lawyer / LawFirm</td><td>匯入批次結果</td><td>系統</td><td>UC15</td></tr>
+          <tr><td>排程匯入新聞 / 社群資料</td><td>排程時間到</td><td>Timer / 管理員</td><td>解析、標記可信度、建立 RiskInfo (Collected)</td><td>待驗證風險資訊</td><td>管理後台</td><td>UC16</td></tr>
+        </tbody>
+      </table>
+      <div class="design-note">
+        <div class="design-note-header">🔗 與 Use Case 的關係</div>
+        <p>本表依照課程教材建議的「主詞 + 動詞 + 受詞」格式撰寫，並補充對應 UC 編號，作為使用案例圖（§01）與使用案例描述（§01-A）的推導依據。Timer 來源欄位表示由系統排程觸發，對應教材 Use Case 章節中的 <code style="color:var(--accent)">Timer Actor</code> 概念。</p>
+      </div>
+    </section>
+
     <!-- 01 USE CASE -->
     <section class="diagram-section" id="uc">
       <div class="section-header">
@@ -1371,35 +1666,42 @@ flowchart LR
     UC18("回呼付款結果")
   end
 
-  Guest --> UC1
-  Guest --> UC2
-  Guest --> UC3
-  Guest --> UC4
-  Guest --> UC5
-  Guest --> UC6
+  %% Actor 一般化：Member 繼承 Guest、UnlockedMember 繼承 Member
+  Member -. generalization .-> Guest
+  UnlockedMember -. generalization .-> Member
 
-  Member --> UC1
-  Member --> UC2
-  Member --> UC3
-  Member --> UC9
-  Member --> UC10
-  Member --> UC7
+  %% Actor 與 Use Case 連線：依教材規則使用無方向實線
+  Guest --- UC1
+  Guest --- UC2
+  Guest --- UC3
+  Guest --- UC4
+  Guest --- UC5
+  Guest --- UC6
 
-  UnlockedMember --> UC8
+  Member --- UC9
+  Member --- UC10
+  Member --- UC7
 
-  Admin --> UC11
-  Admin --> UC12
-  Admin --> UC13
+  UnlockedMember --- UC8
 
-  LawyerRep --> UC13
-  ECPay --> UC18
+  Admin --- UC11
+  Admin --- UC12
+  Admin --- UC13
 
-  ExtData --> UC14
-  ExtData --> UC15
-  ExtData --> UC16
+  LawyerRep --- UC13
+  ECPay --- UC18
+
+  ExtData --- UC14
+  ExtData --- UC15
+  ExtData --- UC16
+
+  %% UC17、UC18 涉及外部金流系統 ECPay：UC ↔ Actor 連線無方向
+  UC17 --- ECPay
+
+  %% Use Case 之間的關係：include / extend 用虛線箭頭加標籤
   UC7 -. include .-> UC17
-  UC17 --> ECPay
-  UC18 --> UC8
+  UC7 -. include .-> UC18
+  UC8 -. extend .-> UC3
           </div>
         </div>
       </div>
@@ -1456,31 +1758,609 @@ rectangle "律師案件圖譜系統" {
   }
 }
 
-Guest --> UC1
-Guest --> UC2
-Guest --> UC3
-Guest --> UC4
-Guest --> UC5
-Guest --> UC6
+' Actor 一般化（generalization）
 Member --|> Guest
-Member --> UC9
-Member --> UC10
-Member --> UC7
 UnlockedMember --|> Member
-UnlockedMember --> UC8
-Admin --> UC11
-Admin --> UC12
-Admin --> UC13
-LawyerRep --> UC13
+
+' Actor 與 Use Case 連線（無方向實線）
+Guest -- UC1
+Guest -- UC2
+Guest -- UC3
+Guest -- UC4
+Guest -- UC5
+Guest -- UC6
+Member -- UC9
+Member -- UC10
+Member -- UC7
+UnlockedMember -- UC8
+Admin -- UC11
+Admin -- UC12
+Admin -- UC13
+LawyerRep -- UC13
+UC17 -- ECPay
+ECPay -- UC18
+ExtData -- UC14
+ExtData -- UC15
+ExtData -- UC16
+
+' Use Case 之間的 include / extend
 UC7 ..> UC17 : <<include>>
-UC17 --> ECPay
-ECPay --> UC18
-UC18 --> UC8
-ExtData --> UC14
-ExtData --> UC15
-ExtData --> UC16
+UC7 ..> UC18 : <<include>>
+UC8 ..> UC3 : <<extend>>
 @enduml</pre></div>
       </div>
+    </section>
+
+    <!-- 01-A USE CASE DESCRIPTIONS -->
+    <section class="diagram-section" id="uc-desc">
+      <div class="section-header">
+        <span class="section-num">01-A</span>
+        <div class="section-title-group">
+          <h2>Use Case Description 使用案例描述</h2>
+          <span class="section-en">Detailed Use Case Specifications</span>
+        </div>
+      </div>
+      <div class="design-note">
+        <div class="design-note-header">📐 撰寫格式</div>
+        <p>每個使用案例對應一張描述表，欄位依課程教材《Use Case Description》與「使用案例描述-範本.pdf」設計：使用案例名稱、相關需求、完成目標、前置條件、成功 / 失敗結束狀態、主要 / 次要角色、觸發事件、主要流程、延伸流程。主要流程以「主詞 + 動詞」逐步描述，被 include 的步驟以 <code style="color:var(--accent2);font-family:'JetBrains Mono',monospace">Include::&lt;UC&gt;</code> 標示；延伸流程以「主步驟.分支序」編號。</p>
+      </div>
+      <div class="presentation-note">
+        <div class="presentation-note-title">本章導讀</div>
+        <p>本章共 18 份描述：UC1~UC5 搜尋與瀏覽、UC6 會員、UC7~UC8 付費、UC9~UC11 心得、UC12~UC13 管理、UC14~UC16 資料匯入、UC17~UC18 為 <code style="color:var(--accent);font-family:'JetBrains Mono',monospace">include</code> 子使用案例（無 Actor 直接觸發）。</p>
+      </div>
+
+      <!-- UC01 Search Lawyer -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC01</span>
+          <span class="uc-desc-name">搜尋律師</span>
+          <span class="uc-desc-name-en">Search Lawyer</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-S001</span></td></tr>
+          <tr><th>完成目標</th><td>使用者依複合條件取得符合條件的律師候選名單。</td></tr>
+          <tr><th>前置條件</th><td>使用者已進入律師搜尋頁面；至少輸入一項查詢條件。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統回傳候選律師名單與免費摘要。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>系統顯示查詢條件錯誤訊息，未回傳結果。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）、會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>使用者點擊「搜尋」按鈕送出查詢條件。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">使用者輸入複合查詢條件（姓名、案件類型、地區、事務所、爭議、聲量、經驗）。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">使用者送出查詢請求。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統驗證查詢條件至少包含一項有效輸入。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統並行查詢律師基本資料、案件輪廓、事務所資料、公開風險摘要。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統依案件適配度與風險提示排序候選名單。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統回傳候選律師清單。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">查詢條件均為空或格式錯誤，系統顯示驗證錯誤訊息並返回步驟 1。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">查詢過程發生例外，系統記錄錯誤並回傳通用錯誤訊息。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC02 View Search Result -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC02</span>
+          <span class="uc-desc-name">查看搜尋結果</span>
+          <span class="uc-desc-name-en">View Search Result</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-S002</span></td></tr>
+          <tr><th>完成目標</th><td>使用者瀏覽候選律師名單並決定是否進入律師資料頁。</td></tr>
+          <tr><th>前置條件</th><td>UC01 已成功回傳候選律師清單。</td></tr>
+          <tr><th>成功的結束狀態</th><td>使用者完成瀏覽，或選擇進入某位律師資料頁（觸發 UC03）。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>系統無候選律師可顯示，僅呈現空結果頁。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）、會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>UC01 完成查詢並回傳結果。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">系統顯示候選律師清單與免費摘要。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">使用者依清單上的姓名、案件輪廓、風險提示比較候選。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">使用者選擇是否進入律師資料頁。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">1.1</span><span class="step-text">查詢結果為空，系統顯示提示並建議放寬條件。</span></div>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">使用者選擇修改條件，返回 UC01。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC03 View Lawyer Free Profile -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC03</span>
+          <span class="uc-desc-name">查看律師免費資料頁</span>
+          <span class="uc-desc-name-en">View Lawyer Free Profile</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-S003</span></td></tr>
+          <tr><th>完成目標</th><td>使用者取得律師免費可見的公開資訊。</td></tr>
+          <tr><th>前置條件</th><td>該律師資料已建立並通過資料可信度標記。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統顯示律師姓名、背景、案件輪廓、所屬事務所、基礎風險提示。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>系統找不到律師資料，顯示 404 錯誤頁。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）、會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>使用者於候選清單或外部連結點擊特定律師。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">使用者進入律師資料頁。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統讀取律師基本資料與所屬事務所資訊。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統讀取律師近五年民事案件輪廓摘要。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統讀取基礎公開風險提示（免費可見部分）。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統顯示完整免費資料頁。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">律師不存在或已下架，系統顯示錯誤頁並結束。</span></div>
+            <div class="step"><span class="step-num">5.1</span><span class="step-text">若使用者已解鎖該律師完整內容，畫面同時顯示付費內容（觸發 UC08，extend 關係）。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC04 View Law Firm Info -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC04</span>
+          <span class="uc-desc-name">查看事務所資訊</span>
+          <span class="uc-desc-name-en">View Law Firm Info</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-S004</span></td></tr>
+          <tr><th>完成目標</th><td>使用者取得律師所屬事務所的公開資訊。</td></tr>
+          <tr><th>前置條件</th><td>該事務所資料已建立。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統顯示事務所名稱、地區、公開背景、相關風險摘要。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>系統找不到事務所資料，顯示提示訊息。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）、會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>使用者於律師資料頁點擊事務所連結。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">使用者點擊事務所連結。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統讀取事務所基本資料與旗下律師清單。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統讀取事務所相關公開風險資訊摘要。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統顯示事務所資訊頁。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">事務所資料不存在，系統顯示提示並回到律師資料頁。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC05 View Public Risk Summary -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC05</span>
+          <span class="uc-desc-name">查看公開風險摘要</span>
+          <span class="uc-desc-name-en">View Public Risk Summary</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-S005</span></td></tr>
+          <tr><th>完成目標</th><td>使用者取得律師或事務所的公開風險資訊摘要。</td></tr>
+          <tr><th>前置條件</th><td>對應的 RiskInfo 狀態為 Published。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統顯示風險條目，包含來源、可信度分層與時間。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>無可顯示風險資料，系統顯示「目前無公開風險紀錄」。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）、會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>使用者於律師或事務所頁瀏覽公開風險區塊。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">使用者捲動至公開風險區塊。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統依目標 ID 查詢狀態為 Published 的 RiskInfo 清單。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統依可信度分層由高至低排序並標示來源。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統顯示風險摘要。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">無 Published 風險資料，顯示「目前無公開風險紀錄」提示。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC06 Register / Login -->
+      <div class="uc-desc" id="uc-desc-06">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC06</span>
+          <span class="uc-desc-name">註冊 / 登入</span>
+          <span class="uc-desc-name-en">Register / Login</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-M001</span></td></tr>
+          <tr><th>完成目標</th><td>使用者完成註冊或登入並建立有效會員身份。</td></tr>
+          <tr><th>前置條件</th><td>使用者連線正常；註冊需提供有效電子郵件。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立或驗證會員帳號，發放 Session / JWT 並回傳會員資料。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>帳號重複、密碼錯誤或驗證失敗，系統拒絕請求並顯示原因。</td></tr>
+          <tr><th>主要角色</th><td>訪客（Guest）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>訪客點擊「註冊」或「登入」並送出表單。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">訪客選擇註冊或登入。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">訪客輸入電子郵件、密碼及必要資訊。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統檢查帳號是否已存在或密碼是否正確。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統建立或驗證使用者，並發放 Session / JWT。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統回傳會員資料並導向原請求頁面。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">註冊時電子郵件已被使用，系統拒絕並提示改用登入。</span></div>
+            <div class="step"><span class="step-num">3.2</span><span class="step-text">登入時密碼錯誤達上限，系統暫時鎖定帳號並通知使用者。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+
+      <!-- UC07 Initiate Paid Unlock -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC07</span>
+          <span class="uc-desc-name">發起付費解鎖</span>
+          <span class="uc-desc-name-en">Initiate Paid Unlock</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-P001</span></td></tr>
+          <tr><th>完成目標</th><td>會員透過綠界完成付款並取得目標內容的解鎖權限。</td></tr>
+          <tr><th>前置條件</th><td>會員已登入；目標律師資料存在；該會員尚未解鎖此目標。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立 PaymentOrder（UnlockGranted）與 UnlockRecord，使用者可查看完整內容。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>付款失敗、逾時或驗簽錯誤，系統不建立解鎖紀錄並顯示原因。</td></tr>
+          <tr><th>主要角色</th><td>會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>綠界金流（ECPay）</td></tr>
+          <tr><th>觸發事件</th><td>會員於律師資料頁點擊「解鎖完整資訊」。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">會員點擊「解鎖完整資訊」並送出請求。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統檢查會員登入狀態與既有 UnlockRecord。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text"><span class="step-include">Include::Create Payment Order（UC17）</span>，建立金流訂單並取得付款連結。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統將會員導向綠界付款頁面。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">會員於綠界完成付款。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text"><span class="step-include">Include::Handle Payment Callback（UC18）</span>，處理綠界回呼並建立 UnlockRecord。</span></div>
+            <div class="step"><span class="step-num">7</span><span class="step-text">系統顯示付款成功並回傳完整內容入口。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">會員未登入，系統導向登入頁面（UC06）並於登入後返回此流程。</span></div>
+            <div class="step"><span class="step-num">2.2</span><span class="step-text">會員已解鎖該內容，系統直接導向 UC08，跳過金流流程。</span></div>
+            <div class="step"><span class="step-num">5.1</span><span class="step-text">會員放棄付款或逾時，PaymentOrder 狀態變為 Expired。</span></div>
+            <div class="step"><span class="step-num">6.1</span><span class="step-text">綠界回呼驗簽失敗，系統不更新訂單也不建立 UnlockRecord，並顯示付款失敗訊息。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC08 View Paid Content -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC08</span>
+          <span class="uc-desc-name">查看付費內容</span>
+          <span class="uc-desc-name-en">View Paid Content</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-P002</span></td></tr>
+          <tr><th>完成目標</th><td>已解鎖會員取得目標律師的完整付費內容。</td></tr>
+          <tr><th>前置條件</th><td>該會員存在有效 UnlockRecord 對應此目標。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統顯示完整案件資訊、完整風險整理、會員心得內容。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>會員未解鎖或解鎖紀錄失效，系統拒絕並提示重新付費。</td></tr>
+          <tr><th>主要角色</th><td>已解鎖會員（Unlocked Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>會員於律師資料頁要求查看完整付費內容；或本 UC 由 UC03 在「已解鎖」條件下擴充（extend）。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">會員要求查看完整付費內容。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統檢查 UnlockRecord 是否有效。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統讀取完整案件、風險整理、會員心得。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統顯示完整付費內容。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">UnlockRecord 不存在或已過期，系統提示重新付費並導向 UC07。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC09 Submit Review -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC09</span>
+          <span class="uc-desc-name">投稿會員心得</span>
+          <span class="uc-desc-name-en">Submit Member Review</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-R001</span></td></tr>
+          <tr><th>完成目標</th><td>會員提交律師心得並進入審核佇列。</td></tr>
+          <tr><th>前置條件</th><td>會員已登入；目標律師存在。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立 Review（status = PendingReview）並通知管理員。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>規則檢查失敗或目標律師不存在，系統不建立 Review 並顯示原因。</td></tr>
+          <tr><th>主要角色</th><td>會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>會員於律師頁點擊「投稿心得」並送出表單。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">會員填寫律師心得（接觸、諮詢、委任經驗）並選擇是否匿名。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">會員送出心得。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統執行規則檢查（字數、禁用詞、重複投稿）。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統建立 Review 並設定狀態為 PendingReview。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統通知管理員有待審心得。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統回應會員「心得已送出，將於審核後上架」。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">規則檢查不通過，系統顯示違規原因並回到步驟 1。</span></div>
+            <div class="step"><span class="step-num">3.2</span><span class="step-text">會員短時間重複投稿同律師，系統阻擋並顯示提示。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC10 Report Review -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC10</span>
+          <span class="uc-desc-name">檢舉會員心得</span>
+          <span class="uc-desc-name-en">Report Member Review</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-R002</span></td></tr>
+          <tr><th>完成目標</th><td>會員針對不當的會員心得提出檢舉並建立檢舉紀錄。</td></tr>
+          <tr><th>前置條件</th><td>會員已登入；目標 Review 狀態為 Published。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立 Complaint，並將 Review 狀態更新為 Reported。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>檢舉理由不完整或重複檢舉，系統拒絕並顯示提示。</td></tr>
+          <tr><th>主要角色</th><td>會員（Member）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>會員於會員心得區點擊「檢舉」並提交理由。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">會員點擊心得旁的「檢舉」按鈕。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">會員選擇檢舉分類並填寫理由。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統建立 Complaint（targetType = Review）。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統將該 Review 狀態更新為 Reported。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統通知管理員處理檢舉。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">理由欄空白，系統拒絕送出。</span></div>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">同一會員已對同一心得檢舉過，系統拒絕重複建立。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC11 Moderate Review -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC11</span>
+          <span class="uc-desc-name">審核會員心得</span>
+          <span class="uc-desc-name-en">Moderate Member Review</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-R003</span></td></tr>
+          <tr><th>完成目標</th><td>管理員決定 Review 是否上架、要求修改或拒絕。</td></tr>
+          <tr><th>前置條件</th><td>Review 狀態為 PendingReview 或 Reported；管理員已登入。</td></tr>
+          <tr><th>成功的結束狀態</th><td>Review 狀態被更新（Published / NeedRevision / Rejected / Hidden / Removed）並通知會員。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>系統因衝突無法更新狀態，操作不生效並通知管理員。</td></tr>
+          <tr><th>主要角色</th><td>管理員（Admin）</td></tr>
+          <tr><th>次要角色</th><td>會員（Member）</td></tr>
+          <tr><th>觸發事件</th><td>管理員進入審核佇列並選擇審核動作。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">管理員於後台進入審核佇列。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">管理員選取待審 Review 並查看內容與相關 Complaint。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">管理員做出決定：通過、要求修改、拒絕、隱藏或下架。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統更新 Review 狀態並記錄處理紀錄。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統通知會員審核結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">內容違反法遵紅線，管理員直接下架（Removed），結束流程。</span></div>
+            <div class="step"><span class="step-num">3.2</span><span class="step-text">內容需修改，狀態變為 NeedRevision，會員需於修改後重新送審。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">並行操作導致狀態衝突，系統重新讀取最新狀態並提示管理員確認。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+
+      <!-- UC12 Manage Risk Info -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC12</span>
+          <span class="uc-desc-name">管理公開風險資訊</span>
+          <span class="uc-desc-name-en">Manage Public Risk Info</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-A001</span></td></tr>
+          <tr><th>完成目標</th><td>管理員建立、驗證、發布、修正、隱藏或下架公開風險資訊。</td></tr>
+          <tr><th>前置條件</th><td>管理員已登入；目標 RiskInfo 存在或可由新資料建立。</td></tr>
+          <tr><th>成功的結束狀態</th><td>RiskInfo 狀態正確轉移並記錄處理人員與時間。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>狀態轉移不合法或資料驗證失敗，系統拒絕操作。</td></tr>
+          <tr><th>主要角色</th><td>管理員（Admin）</td></tr>
+          <tr><th>次要角色</th><td>無</td></tr>
+          <tr><th>觸發事件</th><td>管理員於後台點選風險資訊管理動作。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">管理員於後台檢視 RiskInfo 清單與目前狀態。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">管理員選擇操作（建立、送交驗證、發布、修正、隱藏、下架）。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統驗證狀態轉移是否合法（依 RiskInfo 狀態機）。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統更新 RiskInfo 狀態並記錄處理人員、時間與處理理由。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統回應操作結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">狀態轉移不合法（例：Collected 直接到 Published），系統拒絕並顯示原因。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">修正內容時，系統保留修正前版本作為審計紀錄。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC13 Handle Complaint -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC13</span>
+          <span class="uc-desc-name">處理申訴 / 更正</span>
+          <span class="uc-desc-name-en">Handle Complaint &amp; Correction</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-A002</span></td></tr>
+          <tr><th>完成目標</th><td>管理員受理律師或事務所對平台內容的申訴並完成處理。</td></tr>
+          <tr><th>前置條件</th><td>申訴方已驗證身份；目標內容存在於系統。</td></tr>
+          <tr><th>成功的結束狀態</th><td>Complaint 狀態為已處理；目標內容狀態（Hidden / Corrected / Removed / 維持 Published）依處理結果更新。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>申訴資訊不足或目標內容已下架，系統不接受申訴並通知申訴方。</td></tr>
+          <tr><th>主要角色</th><td>管理員（Admin）</td></tr>
+          <tr><th>次要角色</th><td>律師 / 事務所代表（Lawyer Rep）</td></tr>
+          <tr><th>觸發事件</th><td>律師代表提交申訴或更正請求；或管理員受理檢舉。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">律師代表提交申訴或更正請求，附資料佐證。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統建立 Complaint 並將目標內容狀態更新為 Disputed。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">管理員審視爭議內容與佐證資料。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">管理員決定處理方式（維持、修正、隱藏、下架）。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統依決定更新目標內容狀態並記錄理由。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統通知申訴方處理結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">1.1</span><span class="step-text">申訴資料不足，系統要求補件並暫不開立 Complaint。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">爭議牽涉法律意見，管理員加註法務審核標記並延後處理。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC14 Import Court Judgment -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC14</span>
+          <span class="uc-desc-name">匯入法院判決資料</span>
+          <span class="uc-desc-name-en">Import Court Judgment Data</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-D001</span></td></tr>
+          <tr><th>完成目標</th><td>系統匯入法院公開判決並建立或更新 CaseProfile。</td></tr>
+          <tr><th>前置條件</th><td>排程任務啟動或管理員觸發；資料來源服務可用。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立或更新 CaseProfile / Lawyer / LawFirm，並更新搜尋索引。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>資料格式錯誤或來源中斷，系統記錄匯入失敗批次。</td></tr>
+          <tr><th>主要角色</th><td>外部資料來源（External Data Source）</td></tr>
+          <tr><th>次要角色</th><td>Timer（排程觸發者）、管理員（手動觸發者）</td></tr>
+          <tr><th>觸發事件</th><td>排程時間到，或管理員手動觸發匯入。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">排程或管理員啟動法院判決匯入任務。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統取得原始判決資料。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統驗證資料格式並執行解析（律師、事務所、案件類型、法院、年份）。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統清洗與去重，建立或更新 Lawyer / LawFirm / CaseProfile。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統標記 DataSource 與 CredibilityLevel = Level 1。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統更新搜尋索引並記錄匯入批次結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">資料格式驗證失敗，系統標記為 Failed 並中止此筆資料。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">偵測到既有資料變更，系統建立新版本並保留歷史紀錄。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC15 Import Lawyer Public Info -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC15</span>
+          <span class="uc-desc-name">匯入律師公開資訊</span>
+          <span class="uc-desc-name-en">Import Lawyer Public Info</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-D002</span></td></tr>
+          <tr><th>完成目標</th><td>系統匯入律師公會與政府公開資料，補齊律師基本資料。</td></tr>
+          <tr><th>前置條件</th><td>排程任務啟動或管理員觸發；資料來源可用。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立或更新 Lawyer / LawFirm，並標記 CredibilityLevel = Level 1。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>資料來源不可達或格式錯誤，系統記錄匯入失敗批次。</td></tr>
+          <tr><th>主要角色</th><td>外部資料來源（External Data Source）</td></tr>
+          <tr><th>次要角色</th><td>Timer、管理員</td></tr>
+          <tr><th>觸發事件</th><td>排程時間到，或管理員手動觸發匯入。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">排程或管理員啟動律師公開資訊匯入任務。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統取得律師清單與公開背景資料。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統解析並比對既有 Lawyer 資料。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統建立或更新 Lawyer / LawFirm 並補上 licenseNumber、barAssociation。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統標記 DataSource 與 CredibilityLevel = Level 1。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統記錄匯入批次結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">同名不同人疑似資料衝突，系統暫存於人工確認佇列。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC16 Import News & Social Data -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC16</span>
+          <span class="uc-desc-name">匯入新聞 / 社群資料</span>
+          <span class="uc-desc-name-en">Import News &amp; Social Data</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-D003</span></td></tr>
+          <tr><th>完成目標</th><td>系統匯入新聞與社群資料並建立尚待驗證的 RiskInfo。</td></tr>
+          <tr><th>前置條件</th><td>排程任務啟動或管理員觸發；資料來源可用。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立 RiskInfo（status = Collected → PendingVerification），並依來源標記 CredibilityLevel 2 或 3。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>資料來源不可達或格式錯誤，系統記錄匯入失敗批次。</td></tr>
+          <tr><th>主要角色</th><td>外部資料來源（External Data Source）</td></tr>
+          <tr><th>次要角色</th><td>Timer、管理員</td></tr>
+          <tr><th>觸發事件</th><td>排程時間到，或管理員手動觸發匯入。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">排程或管理員啟動新聞 / 社群匯入任務。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統取得原始文本與來源資訊。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統解析並比對律師或事務所目標。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統建立 RiskInfo（status = Collected）。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統依來源類別標記 CredibilityLevel（新聞 = Level 2、社群 = Level 3）。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統將 RiskInfo 送交驗證佇列（PendingVerification），不直接發布。</span></div>
+            <div class="step"><span class="step-num">7</span><span class="step-text">系統記錄匯入批次結果。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">無法解析對應律師或事務所，系統暫存於人工標記佇列。</span></div>
+            <div class="step"><span class="step-num">5.1</span><span class="step-text">來源類別不明，預設 CredibilityLevel = Unknown 並不送驗證。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+
+      <div class="design-note" style="margin-top:24px;">
+        <div class="design-note-header">🧩 被 include 的子使用案例</div>
+        <p>以下 UC17、UC18 為 UC07「發起付費解鎖」的 include 對象。依教材慣例，被 include 的 UC <strong>沒有 Actor 直接觸發</strong>，因此主要角色 / 次要角色填「無」，觸發事件描述為「&lt;資料 / 要求&gt; 被送達」。</p>
+      </div>
+
+      <!-- UC17 Create Payment Order -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC17</span>
+          <span class="uc-desc-name">建立付款訂單</span>
+          <span class="uc-desc-name-en">Create Payment Order</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-P001</span></td></tr>
+          <tr><th>完成目標</th><td>系統依使用者解鎖請求建立金流訂單並取得綠界付款連結。</td></tr>
+          <tr><th>前置條件</th><td>使用者已登入；目標律師存在；該使用者尚未解鎖此目標。</td></tr>
+          <tr><th>成功的結束狀態</th><td>系統建立 PaymentOrder（status = Created → PendingPayment）並回傳 paymentUrl。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>綠界回應錯誤或建立訂單失敗，系統不持久化訂單並回傳失敗訊息。</td></tr>
+          <tr><th>主要角色</th><td>無</td></tr>
+          <tr><th>次要角色</th><td>綠界金流（ECPay）</td></tr>
+          <tr><th>觸發事件</th><td>解鎖請求由 UC07 送達。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">系統建立 PaymentOrder 記錄並設定 idempotencyKey。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統呼叫綠界建立交易 API，傳入 orderId 與金額。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統接收綠界回傳的 paymentUrl。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統將 PaymentOrder 狀態更新為 PendingPayment 並回傳 paymentUrl 給上層 UC。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">綠界回應錯誤，系統將 PaymentOrder 狀態更新為 Failed 並回傳錯誤。</span></div>
+            <div class="step"><span class="step-num">3.1</span><span class="step-text">綠界回應逾時，系統等待重試並於上限後標記為 Failed。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
+      <!-- UC18 Handle Payment Callback -->
+      <div class="uc-desc">
+        <div class="uc-desc-header">
+          <span class="uc-desc-id">UC18</span>
+          <span class="uc-desc-name">回呼付款結果</span>
+          <span class="uc-desc-name-en">Handle Payment Callback</span>
+        </div>
+        <table class="uc-desc-table">
+          <tr><th>相關需求</th><td><span class="req-code">REQ-P001</span></td></tr>
+          <tr><th>完成目標</th><td>系統處理綠界付款結果回呼，驗簽後完成解鎖授予或失敗處理。</td></tr>
+          <tr><th>前置條件</th><td>存在對應的 PaymentOrder（status = PendingPayment）。</td></tr>
+          <tr><th>成功的結束狀態</th><td>PaymentOrder 狀態為 UnlockGranted；UnlockRecord 已建立。</td></tr>
+          <tr><th>失敗的結束狀態</th><td>驗簽失敗或交易驗證錯誤，系統不更新訂單也不建立解鎖紀錄並回應 FAIL。</td></tr>
+          <tr><th>主要角色</th><td>無</td></tr>
+          <tr><th>次要角色</th><td>綠界金流（ECPay）</td></tr>
+          <tr><th>觸發事件</th><td>綠界送達付款結果 webhook。</td></tr>
+          <tr><th>主要流程</th><td>
+            <div class="step"><span class="step-num">1</span><span class="step-text">系統接收綠界 webhook 並讀取參數。</span></div>
+            <div class="step"><span class="step-num">2</span><span class="step-text">系統驗證 checkMacValue 與訂單合法性。</span></div>
+            <div class="step"><span class="step-num">3</span><span class="step-text">系統將 PaymentOrder 狀態更新為 Paid。</span></div>
+            <div class="step"><span class="step-num">4</span><span class="step-text">系統建立 UnlockRecord。</span></div>
+            <div class="step"><span class="step-num">5</span><span class="step-text">系統將 PaymentOrder 狀態更新為 UnlockGranted。</span></div>
+            <div class="step"><span class="step-num">6</span><span class="step-text">系統回應綠界 OK 並通知上層 UC07。</span></div>
+          </td></tr>
+          <tr><th>延伸流程</th><td>
+            <div class="step"><span class="step-num">2.1</span><span class="step-text">驗簽失敗，系統回應 FAIL 並不變更訂單狀態。</span></div>
+            <div class="step"><span class="step-num">2.2</span><span class="step-text">收到不存在的 orderId，系統記錄安全事件並回應 FAIL。</span></div>
+            <div class="step"><span class="step-num">4.1</span><span class="step-text">UnlockRecord 已存在（重複回呼），系統視為冪等成功並回應 OK。</span></div>
+          </td></tr>
+        </table>
+      </div>
+
     </section>
 
     <!-- 02 ACTIVITY SEARCH -->
@@ -1849,6 +2729,7 @@ stop
       <div class="design-note">
         <div class="design-note-header">📐 設計說明</div>
         <p><span class="note-derived">【需求推導】</span> 10 個核心類別均來自需求文件。關聯規則皆為需求明確推導。DataSource.credibilityLevel 對應需求 §十二 的三層可信度分層。</p>
+        <p><span class="note-derived">【教材對應】</span> 依《Class Diagram》分析階段建議，類別操作以<strong>敘述性</strong>形式撰寫（如 <code style="font-family:'JetBrains Mono',monospace;color:var(--accent)">+approve()</code>、<code style="font-family:'JetBrains Mono',monospace;color:var(--accent)">+sendToVerification()</code>），<strong>不</strong>描述操作的細部邏輯。實作階段再分解與細化。</p>
         <p><span class="note-assumed">【合理補充】</span> 各類別的 createdAt / updatedAt 為 ORM 慣例。UnlockRecord.expiredAt 預設空值（無限期），未來訂閱制可填充。CaseProfile.civilCaseOnly = true 為 MVP 範圍標記。</p>
         <p><span class="note-assumed">【合理補充】</span> Complaint 採多型 target 設計：Complaint.targetType 可為 Review、RiskInfo、LawyerProfile、LawFirmProfile；targetId 為目標物件主鍵。此設計在 MVP 階段較彈性，但資料一致性與授權需由應用層規則補強。</p>
         <p><span class="note-assumed">【合理補充】</span> RiskInfo 採多型目標設計（targetType/targetId），可掛載於 Lawyer 或 LawFirm。資料庫外鍵約束需由應用層或資料一致性規則補強。</p>
@@ -1872,6 +2753,11 @@ classDiagram
     +Enum role
     +Enum membershipStatus
     +DateTime createdAt
+    +register()
+    +login()
+    +submitReview()
+    +reportContent()
+    +initiateUnlock()
   }
   class Lawyer {
     +UUID id
@@ -1881,6 +2767,10 @@ classDiagram
     +String region
     +UUID lawFirmId
     +Text summary
+    +getProfile()
+    +listCaseProfiles()
+    +listRiskInfo()
+    +listReviews()
   }
   class LawFirm {
     +UUID id
@@ -1888,6 +2778,9 @@ classDiagram
     +String region
     +Text publicBackground
     +Text reputationSummary
+    +getProfile()
+    +listLawyers()
+    +listRiskInfo()
   }
   class CaseProfile {
     +UUID id
@@ -1897,6 +2790,8 @@ classDiagram
     +Integer judgmentYear
     +Boolean civilCaseOnly
     +Text summary
+    +getSummary()
+    +matchCaseType()
   }
   class RiskInfo {
     +UUID id
@@ -1908,6 +2803,11 @@ classDiagram
     +Enum riskLevel
     +Enum status
     +UUID dataSourceId
+    +sendToVerification()
+    +publish()
+    +correct()
+    +hide()
+    +remove()
   }
   class Review {
     +UUID id
@@ -1917,6 +2817,12 @@ classDiagram
     +Text content
     +Boolean anonymous
     +Enum status
+    +submitForReview()
+    +approve()
+    +requestRevision()
+    +reject()
+    +flagReported()
+    +hide()
   }
   class PaymentOrder {
     +UUID id
@@ -1927,6 +2833,11 @@ classDiagram
     +Enum provider
     +Enum status
     +String idempotencyKey
+    +create()
+    +markPaid()
+    +grantUnlock()
+    +markFailed()
+    +requestRefund()
   }
   class UnlockRecord {
     +UUID id
@@ -1935,6 +2846,8 @@ classDiagram
     +UUID paymentOrderId
     +DateTime unlockedAt
     +DateTime expiredAt
+    +isActive()
+    +expire()
   }
   class Complaint {
     +UUID id
@@ -1943,6 +2856,9 @@ classDiagram
     +UUID targetId
     +Text reason
     +Enum status
+    +submit()
+    +resolve()
+    +reject()
   }
   class DataSource {
     +UUID id
@@ -1950,6 +2866,8 @@ classDiagram
     +String name
     +Enum credibilityLevel
     +DateTime lastImportedAt
+    +importBatch()
+    +markCredibility()
   }
 
   LawFirm "1" o-- "0..*" Lawyer : 所屬事務所
@@ -1980,16 +2898,47 @@ classDiagram
         <div class="code-body"><pre>@startuml 05_domain_class_diagram
 title 律師案件圖譜 — Domain Class Diagram
 
-class User { +id +email +displayName +role +membershipStatus }
-class Lawyer { +id +name +barAssociation +licenseNumber +region +lawFirmId }
-class LawFirm { +id +name +region +publicBackground +reputationSummary }
-class CaseProfile { +id +lawyerId +caseType +courtName +judgmentYear +civilCaseOnly }
-class RiskInfo { +id +targetType +targetId +sourceType +credibilityLevel +riskLevel +status }
-class Review { +id +userId +lawyerId +reviewType +content +anonymous +status }
-class PaymentOrder { +id +userId +targetId +amount +provider +status +idempotencyKey }
-class UnlockRecord { +id +userId +targetId +paymentOrderId +unlockedAt +expiredAt }
-class Complaint { +id +reporterId +targetType +targetId +reason +status }
-class DataSource { +id +sourceType +name +credibilityLevel }
+class User {
+  +id +email +displayName +role +membershipStatus
+  +register() +login()
+  +submitReview() +reportContent() +initiateUnlock()
+}
+class Lawyer {
+  +id +name +barAssociation +licenseNumber +region +lawFirmId
+  +getProfile() +listCaseProfiles() +listRiskInfo() +listReviews()
+}
+class LawFirm {
+  +id +name +region +publicBackground +reputationSummary
+  +getProfile() +listLawyers() +listRiskInfo()
+}
+class CaseProfile {
+  +id +lawyerId +caseType +courtName +judgmentYear +civilCaseOnly
+  +getSummary() +matchCaseType()
+}
+class RiskInfo {
+  +id +targetType +targetId +sourceType +credibilityLevel +riskLevel +status
+  +sendToVerification() +publish() +correct() +hide() +remove()
+}
+class Review {
+  +id +userId +lawyerId +reviewType +content +anonymous +status
+  +submitForReview() +approve() +requestRevision() +reject() +flagReported() +hide()
+}
+class PaymentOrder {
+  +id +userId +targetId +amount +provider +status +idempotencyKey
+  +create() +markPaid() +grantUnlock() +markFailed() +requestRefund()
+}
+class UnlockRecord {
+  +id +userId +targetId +paymentOrderId +unlockedAt +expiredAt
+  +isActive() +expire()
+}
+class Complaint {
+  +id +reporterId +targetType +targetId +reason +status
+  +submit() +resolve() +reject()
+}
+class DataSource {
+  +id +sourceType +name +credibilityLevel
+  +importBatch() +markCredibility()
+}
 
 LawFirm "1" o-- "0..*" Lawyer
 Lawyer "1" *-- "0..*" CaseProfile
@@ -2538,52 +3487,127 @@ endif
 <button id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到頂部">↑</button>
 
 <script>
-  // Mermaid init with dark theme
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'dark',
-    themeVariables: {
-      background: '#0a0e1a',
-      mainBkg: '#141929',
-      nodeBorder: '#344060',
-      clusterBkg: '#0f1524',
-      titleColor: '#e8edf8',
-      edgeLabelBackground: '#1a2035',
-      primaryColor: '#1a2035',
-      primaryTextColor: '#e8edf8',
-      primaryBorderColor: '#344060',
-      lineColor: '#4a7090',
-      secondaryColor: '#0f1524',
-      tertiaryColor: '#141929',
-      fontFamily: 'Noto Sans TC, sans-serif',
-      fontSize: '14px',
-      // sequence
-      actorBkg: '#1a2035',
-      actorBorder: '#344060',
-      actorTextColor: '#e8edf8',
-      actorLineColor: '#4a7090',
-      signalColor: '#a8b4cc',
-      signalTextColor: '#e8edf8',
-      labelBoxBkgColor: '#0f1524',
-      labelBoxBorderColor: '#344060',
-      labelTextColor: '#a8b4cc',
-      loopTextColor: '#a8b4cc',
-      noteBorderColor: '#344060',
-      noteBkgColor: '#1a2035',
-      noteTextColor: '#a8b4cc',
-      activationBorderColor: '#4a7090',
-      activationBkgColor: '#1f2740',
-      // class
-      classText: '#e8edf8',
-      // state
-      fillType0: '#1a2035',
-      fillType1: '#141929',
+  // === MERMAID THEME ===
+  // Mermaid 不會在執行期反應 CSS 變數變更，所以為兩套主題各備一份 themeVariables，
+  // 切換主題時重設 mermaid 並重新 render 所有圖表。
+  const MERMAID_THEME = {
+    dark: {
+      theme: 'dark',
+      themeVariables: {
+        background: '#0a0e1a',
+        mainBkg: '#1a2035',
+        nodeBorder: '#7a8aaa',           // 較亮邊框，投影更清楚
+        clusterBkg: '#0f1524',
+        clusterBorder: '#4a587a',
+        titleColor: '#eef2fb',
+        edgeLabelBackground: '#1a2035',
+        primaryColor: '#1a2035',
+        primaryTextColor: '#eef2fb',
+        primaryBorderColor: '#7a8aaa',
+        lineColor: '#8aa0c0',
+        secondaryColor: '#0f1524',
+        tertiaryColor: '#141929',
+        fontFamily: 'Noto Sans TC, sans-serif',
+        fontSize: '14px',
+        actorBkg: '#1a2035',
+        actorBorder: '#7a8aaa',
+        actorTextColor: '#eef2fb',
+        actorLineColor: '#8aa0c0',
+        signalColor: '#c0cbe1',
+        signalTextColor: '#eef2fb',
+        labelBoxBkgColor: '#0f1524',
+        labelBoxBorderColor: '#4a587a',
+        labelTextColor: '#c0cbe1',
+        loopTextColor: '#c0cbe1',
+        noteBorderColor: '#4a587a',
+        noteBkgColor: '#1a2035',
+        noteTextColor: '#c0cbe1',
+        activationBorderColor: '#7a8aaa',
+        activationBkgColor: '#1f2740',
+        classText: '#eef2fb',
+        fillType0: '#1a2035',
+        fillType1: '#141929',
+      },
     },
+    light: {
+      theme: 'default',
+      themeVariables: {
+        background: '#ffffff',
+        mainBkg: '#ffffff',
+        nodeBorder: '#6b7689',           // 柔和深灰藍
+        clusterBkg: '#f6f7f9',
+        clusterBorder: '#9ba6b8',
+        titleColor: '#1a2030',
+        edgeLabelBackground: '#ffffff',
+        primaryColor: '#ffffff',
+        primaryTextColor: '#1a2030',
+        primaryBorderColor: '#6b7689',
+        lineColor: '#6b7689',
+        secondaryColor: '#f6f7f9',
+        tertiaryColor: '#eef2f7',
+        fontFamily: 'Noto Sans TC, sans-serif',
+        fontSize: '14px',
+        actorBkg: '#ffffff',
+        actorBorder: '#6b7689',
+        actorTextColor: '#1a2030',
+        actorLineColor: '#6b7689',
+        signalColor: '#3d4a63',
+        signalTextColor: '#1a2030',
+        labelBoxBkgColor: '#eef2f7',
+        labelBoxBorderColor: '#9ba6b8',
+        labelTextColor: '#3d4a63',
+        loopTextColor: '#3d4a63',
+        noteBorderColor: '#9ba6b8',
+        noteBkgColor: '#f6f7f9',
+        noteTextColor: '#3d4a63',
+        activationBorderColor: '#6b7689',
+        activationBkgColor: '#e8eef5',
+        classText: '#1a2030',
+        fillType0: '#ffffff',
+        fillType1: '#eef2f7',
+      },
+    },
+  };
+
+  const COMMON_MERMAID_CONFIG = {
+    startOnLoad: false,
     flowchart: { curve: 'basis', padding: 20 },
     sequence: { mirrorActors: false, bottomMarginAdj: 10, useMaxWidth: true },
     classDiagram: { useMaxWidth: true },
     stateDiagram: { useMaxWidth: true },
+  };
+
+  // 保存每張圖的原始原始碼，以便重新 render
+  const mermaidSources = [];
+  document.querySelectorAll('.mermaid').forEach((el, idx) => {
+    el.dataset.mermaidIndex = String(idx);
+    mermaidSources.push(el.textContent);
   });
+
+  function applyMermaidTheme(themeName) {
+    const conf = MERMAID_THEME[themeName] || MERMAID_THEME.dark;
+    mermaid.initialize({ ...COMMON_MERMAID_CONFIG, ...conf });
+  }
+
+  async function renderAllMermaid() {
+    const nodes = document.querySelectorAll('.mermaid');
+    for (const el of nodes) {
+      const idx = Number(el.dataset.mermaidIndex);
+      const source = mermaidSources[idx];
+      if (!source) continue;
+      el.removeAttribute('data-processed');
+      el.innerHTML = source;
+    }
+    await mermaid.run({ nodes: Array.from(nodes) });
+  }
+
+  // 提早讀 localStorage 設定 data-theme，避免初始畫面閃一下深色才切淺色
+  if (localStorage.getItem('umlTheme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  const initialTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyMermaidTheme(initialTheme);
+  renderAllMermaid();
 
   // Scroll spy
   const sections = document.querySelectorAll('.diagram-section');
@@ -2723,7 +3747,7 @@ endif
 
       const hint = document.createElement('div');
       hint.className = 'diagram-hint';
-      hint.textContent = '拖曳移動畫布 · Ctrl/⌘ + 滾輪縮放 · 雙擊重置';
+      hint.textContent = '拖曳平移 · Ctrl/⌘ + 滾輪縮放 · 雙擊重置 · ← / → 切換 · F 全螢幕 · 0 重置';
       body.appendChild(hint);
 
       const state = {
@@ -2761,12 +3785,23 @@ endif
         return clamp(fitScale, getMinReadableScale(wrap), MAX_FIT_SCALE);
       };
 
+      // 「適合視窗」：寬高都不會切掉，全螢幕高長型圖適用
+      const getFitScreenScale = () => {
+        if (!state.originalWidth || !state.originalHeight) return 1;
+        const fitW = body.clientWidth / state.originalWidth;
+        const fitH = body.clientHeight / state.originalHeight;
+        const fit = Math.min(fitW, fitH);
+        return clamp(fit, getMinReadableScale(wrap), MAX_FIT_SCALE);
+      };
+
       const setMode = (mode, options = {}) => {
         state.mode = mode;
         if (mode === 'original') {
           applyScale(1, options);
         } else if (mode === 'fit-width') {
           applyScale(getFitWidthScale(), options);
+        } else if (mode === 'fit-screen') {
+          applyScale(getFitScreenScale(), options);
         } else {
           applyScale(state.scale, options);
         }
@@ -2871,13 +3906,30 @@ endif
 
       viewers.push({
         wrap,
+        body,
         refresh() {
           if (!state.svg) return;
           if (state.mode === 'fit-width') {
             applyScale(getFitWidthScale());
+          } else if (state.mode === 'fit-screen') {
+            applyScale(getFitScreenScale());
           } else {
             applyScale(state.scale);
           }
+        },
+        // 主題切換後 mermaid 會重畫，SVG 是全新節點 — 重新偵測並 reset
+        refreshSvg() {
+          state.svg = null;
+          state.originalWidth = 0;
+          state.originalHeight = 0;
+          waitForSvg(body, (svg) => {
+            state.svg = svg;
+            const size = getSvgSize(svg);
+            state.originalWidth = size.width;
+            state.originalHeight = size.height;
+            const mode = document.fullscreenElement === wrap ? 'fit-screen' : 'fit-width';
+            setMode(mode, { center: true });
+          });
         },
         syncFullscreenLabel() {
           fullscreenBtn.textContent = document.fullscreenElement === wrap ? '離開全螢幕' : '全螢幕';
@@ -2887,12 +3939,36 @@ endif
           if (!state.svg) return;
           if (document.fullscreenElement === wrap) {
             lastFullscreenWrap = wrap;
-            setMode('fit-width', { center: true });
+            // 進入全螢幕用 fit-screen（寬高都不切掉），不再是 fit-width
+            setMode('fit-screen', { center: true });
           } else if (document.fullscreenElement === null && lastFullscreenWrap === wrap) {
             resetDiagram();
             lastFullscreenWrap = null;
           }
         },
+        // 鍵盤導航用：捲到此圖、進入全螢幕
+        scrollIntoView() {
+          wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        },
+        async toggleFullscreen() {
+          try {
+            if (document.fullscreenElement === wrap) {
+              await document.exitFullscreen();
+            } else {
+              lastFullscreenWrap = wrap;
+              await wrap.requestFullscreen();
+            }
+          } catch (err) { console.error(err); }
+        },
+        zoomIn() {
+          state.mode = 'custom';
+          applyScale(state.scale + ZOOM_STEP, { keepView: true });
+        },
+        zoomOut() {
+          state.mode = 'custom';
+          applyScale(state.scale - ZOOM_STEP, { keepView: true });
+        },
+        reset() { resetDiagram(); },
       });
     });
 
@@ -2907,19 +3983,145 @@ endif
       if (classChanged) refreshAllViewers();
     });
     bodyClassObserver.observe(document.body, { attributes: true });
+
+    // 暴露給主題切換、鍵盤導航用
+    window.__diagramViewers = viewers;
+    window.__refreshAllDiagramSvgs = () => viewers.forEach(v => v.refreshSvg());
   }
 
   initDiagramViewers();
 
-  // Sidebar collapse/expand (desktop)
+  // === THEME TOGGLE (深色 / 淺色) ===
+  function initTheme() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    const storageKey = 'umlTheme';
+    const labelEl = btn.querySelector('.hero-btn-label');
+
+    const sync = () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      btn.classList.toggle('is-active', isLight);
+      btn.setAttribute('aria-pressed', String(isLight));
+      btn.title = isLight ? '切換為深色主題（適合螢幕）' : '切換為淺色主題（適合投影機）';
+      if (labelEl) labelEl.textContent = isLight ? '深色主題' : '淺色主題';
+    };
+
+    // data-theme 與 Mermaid 在頁面初始化階段就已依 localStorage 設定，
+    // 這裡只負責同步按鈕狀態。
+    sync();
+
+    btn.addEventListener('click', async () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const next = current === 'light' ? 'dark' : 'light';
+      if (next === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+      localStorage.setItem(storageKey, next);
+      applyMermaidTheme(next);
+      await renderAllMermaid();
+      window.__refreshAllDiagramSvgs?.();
+      sync();
+    });
+  }
+
+  initTheme();
+
+  // === KEYBOARD NAVIGATION (上台報告用) ===
+  // 全螢幕：←/→ 切上 / 下一張、0 重置、+/- 縮放、F 切換全螢幕
+  // 非全螢幕：←/→ 在 .mermaid-wrap 之間捲動
+  function initKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      const target = e.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const viewers = window.__diagramViewers || [];
+      if (viewers.length === 0) return;
+      const fsEl = document.fullscreenElement;
+      const fsViewer = viewers.find(v => v.wrap === fsEl);
+
+      const currentViewer = fsViewer || (() => {
+        const midY = window.innerHeight / 2;
+        let best = null, bestDist = Infinity;
+        for (const v of viewers) {
+          const r = v.wrap.getBoundingClientRect();
+          const dist = Math.abs((r.top + r.bottom) / 2 - midY);
+          if (dist < bestDist) { bestDist = dist; best = v; }
+        }
+        return best;
+      })();
+      if (!currentViewer) return;
+
+      const idx = viewers.indexOf(currentViewer);
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown': {
+          if (idx < viewers.length - 1) {
+            e.preventDefault();
+            const next = viewers[idx + 1];
+            if (fsViewer) { fsViewer.toggleFullscreen().then(() => next.toggleFullscreen()); }
+            else { next.scrollIntoView(); }
+          }
+          break;
+        }
+        case 'ArrowLeft':
+        case 'ArrowUp': {
+          if (idx > 0) {
+            e.preventDefault();
+            const prev = viewers[idx - 1];
+            if (fsViewer) { fsViewer.toggleFullscreen().then(() => prev.toggleFullscreen()); }
+            else { prev.scrollIntoView(); }
+          }
+          break;
+        }
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          currentViewer.toggleFullscreen();
+          break;
+        case '0':
+          e.preventDefault();
+          currentViewer.reset();
+          break;
+        case '+':
+        case '=':
+          e.preventDefault();
+          currentViewer.zoomIn();
+          break;
+        case '-':
+        case '_':
+          e.preventDefault();
+          currentViewer.zoomOut();
+          break;
+      }
+    });
+  }
+
+  initKeyboardNav();
+
+  // Sidebar collapse/expand（桌面：窄欄；手機／窄版：收合頂部導覽）
   function initSidebarZoom() {
     const btn = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const nav = sidebar ? sidebar.querySelector('.sidebar-nav') : null;
     if (!btn) return;
 
     const storageKey = 'umlSidebarCollapsed';
+    const storageKeyMobile = 'umlSidebarMobileNavCollapsed';
     const media = window.matchMedia('(max-width: 900px)');
 
     const sync = () => {
+      if (media.matches) {
+        const mobileCollapsed = document.body.classList.contains('sidebar-mobile-collapsed');
+        btn.textContent = mobileCollapsed ? '☰' : '▲';
+        btn.title = mobileCollapsed ? '展開報告導覽選單' : '收合報告導覽選單';
+        btn.setAttribute('aria-label', mobileCollapsed ? '展開報告導覽選單' : '收合報告導覽選單');
+        btn.setAttribute('aria-expanded', String(!mobileCollapsed));
+        return;
+      }
       const collapsed = document.body.classList.contains('sidebar-collapsed');
       btn.textContent = collapsed ? '▶' : '◀';
       btn.title = collapsed ? '展開側邊欄' : '收合側邊欄';
@@ -2930,9 +4132,15 @@ endif
     const applyByViewport = () => {
       if (media.matches) {
         document.body.classList.remove('sidebar-collapsed');
+        if (localStorage.getItem(storageKeyMobile) === '1') {
+          document.body.classList.add('sidebar-mobile-collapsed');
+        } else {
+          document.body.classList.remove('sidebar-mobile-collapsed');
+        }
         sync();
         return;
       }
+      document.body.classList.remove('sidebar-mobile-collapsed');
       if (localStorage.getItem(storageKey) === '1') {
         document.body.classList.add('sidebar-collapsed');
       } else {
@@ -2942,11 +4150,27 @@ endif
     };
 
     btn.addEventListener('click', () => {
+      if (media.matches) {
+        document.body.classList.toggle('sidebar-mobile-collapsed');
+        localStorage.setItem(storageKeyMobile, document.body.classList.contains('sidebar-mobile-collapsed') ? '1' : '0');
+        sync();
+        return;
+      }
       document.body.classList.toggle('sidebar-collapsed');
       const collapsed = document.body.classList.contains('sidebar-collapsed');
       localStorage.setItem(storageKey, collapsed ? '1' : '0');
       sync();
     });
+
+    if (nav) {
+      nav.addEventListener('click', (e) => {
+        const link = e.target.closest('a.nav-item');
+        if (!link || !media.matches) return;
+        document.body.classList.add('sidebar-mobile-collapsed');
+        localStorage.setItem(storageKeyMobile, '1');
+        sync();
+      });
+    }
 
     media.addEventListener('change', applyByViewport);
     applyByViewport();
